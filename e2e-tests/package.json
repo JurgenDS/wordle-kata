@@ -1,0 +1,25 @@
+{
+  "name": "wordle-kata",
+  "version": "1.0.0",
+  "description": "**Challenge:** Transform a \"Hello World\" app into a fully functional Wordle game while maintaining **Hexagonal Architecture** and **100% test coverage**!",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "cleanup": "sh scripts/cleanup-services.sh",
+    "bddgen": "bddgen"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "playwright-bdd": "^8.4.1"
+  }
+}

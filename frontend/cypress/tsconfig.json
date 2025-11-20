@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/cypress",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["cypress", "node"]
+  },
+  "include": [
+    "**/*.ts",
+    "../src/**/*.cy.ts"
+  ]
+}

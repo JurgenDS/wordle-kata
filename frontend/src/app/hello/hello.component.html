@@ -1,0 +1,35 @@
+<div class="hello-container">
+  <h1>Hello World Demo</h1>
+
+  <div class="form-group">
+    <label for="nameInput">Enter your name:</label>
+    <input
+      id="nameInput"
+      type="text"
+      [value]="name()"
+      (input)="updateName($event)"
+      placeholder="World"
+      class="name-input"
+    />
+  </div>
+
+  <button (click)="fetchGreeting()" [disabled]="loading()" class="fetch-button">
+    @if (loading()) {
+      Loading...
+    } @else {
+      Get Greeting
+    }
+  </button>
+
+  @if (error()) {
+    <div class="error-message">
+      {{ error() }}
+    </div>
+  }
+
+  @if (greeting()) {
+    <div class="greeting-result">
+      <h2>{{ greeting() }}</h2>
+    </div>
+  }
+</div>

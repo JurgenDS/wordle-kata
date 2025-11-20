@@ -1,0 +1,27 @@
+# Playwright
+playwright-report/
+test-results/
+playwright/.cache/
+
+# Generated test files
+.features-gen/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+

@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+package-lock.json
+
+# Build output
+dist
+.angular
+coverage
+
+# Test output
+cypress/screenshots
+cypress/videos
+
+# IDE
+.vscode
+.idea
+
+# Misc
+*.log
+.DS_Store
