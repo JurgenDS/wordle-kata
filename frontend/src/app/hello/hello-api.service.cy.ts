@@ -5,7 +5,7 @@ import { HelloApiService, GreetingResponse } from './hello-api.service';
 
 describe('HelloApiService', () => {
   let service: HelloApiService;
-  let httpMock: HttpTestingController;
+  let fakeHttpBackend: HttpTestingController; // FAKE: Working HTTP implementation without real network calls
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -13,11 +13,11 @@ describe('HelloApiService', () => {
     });
 
     service = TestBed.inject(HelloApiService);
-    httpMock = TestBed.inject(HttpTestingController);
+    fakeHttpBackend = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
-    httpMock.verify();
+    fakeHttpBackend.verify();
   });
 
   it('should be created', () => {
@@ -27,41 +27,41 @@ describe('HelloApiService', () => {
   it('should fetch greeting with custom name', (done) => {
     // Arrange
     const name = 'Alice';
-    const mockResponse: GreetingResponse = {
+    const stubResponse: GreetingResponse = {
       message: 'Hello, Alice! Welcome to the world.',
     };
 
     // Act
     service.getGreeting(name).subscribe((response) => {
       // Assert
-      expect(response).to.deep.equal(mockResponse);
+      expect(response).to.deep.equal(stubResponse);
       expect(response.message).to.include('Alice');
       done();
     });
 
-    // Assert - HTTP request
-    const req = httpMock.expectOne('http://localhost:8080/api/hello?name=Alice');
+    // Fake HTTP backend intercepts and responds
+    const req = fakeHttpBackend.expectOne('http://localhost:8080/api/hello?name=Alice');
     expect(req.request.method).to.equal('GET');
-    req.flush(mockResponse);
+    req.flush(stubResponse);
   });
 
   it('should fetch greeting with default name', (done) => {
     // Arrange
     const name = 'World';
-    const mockResponse: GreetingResponse = {
+    const stubResponse: GreetingResponse = {
       message: 'Hello, World! Welcome to the world.',
     };
 
     // Act
     service.getGreeting(name).subscribe((response) => {
       // Assert
-      expect(response).to.deep.equal(mockResponse);
+      expect(response).to.deep.equal(stubResponse);
       done();
     });
 
-    // Assert - HTTP request
-    const req = httpMock.expectOne('http://localhost:8080/api/hello?name=World');
+    // Fake HTTP backend intercepts and responds
+    const req = fakeHttpBackend.expectOne('http://localhost:8080/api/hello?name=World');
     expect(req.request.method).to.equal('GET');
-    req.flush(mockResponse);
+    req.flush(stubResponse);
   });
 });
