@@ -202,6 +202,10 @@ cd e2e-tests && npm run cleanup
 - **[Frontend Coverage Setup](./frontend/COVERAGE.md)** - Manual Istanbul instrumentation details
 - **[E2E Tests Guide](./e2e-tests/README.md)** - Playwright BDD setup, running E2E tests, best practices
 
+**Infrabel Specific**
+- **[UPM Train Planning vs Wordle Backend](./backend/upmng-service-train-planning-vs-backend.md)** - The main differences between working at an Infrabel backend vs this Wordle Kata
+- **[UPM Frontend vs Wordle Frontend](./frontend/upm-client-vs-frontend.md)** - The main differences between working at an Infrabel frontend vs this Wordle Kata
+
 ---
 
 ## 🎉 Ready to Start?
