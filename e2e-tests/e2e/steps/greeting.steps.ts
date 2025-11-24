@@ -28,8 +28,8 @@ When('I click the {string} button', async ({ page }, buttonText: string) => {
 // Then steps (Assert)
 
 Then('I should see the {string} heading', async ({ page }, headingText: string) => {
-  const heading = page.locator('h1');
-  await expect(heading).toContainText(headingText);
+  const heading = page.getByText(headingText).first();
+  await expect(heading).toBeVisible();
 });
 
 Then('the name input should contain {string}', async ({ page }, expectedValue: string) => {

@@ -1,11 +1,23 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HelloApiService, GreetingResponse } from '@wordle-kata/data-access';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { CardModule } from 'primeng/card';
+import { MessageModule } from 'primeng/message';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-hello',
   standalone: true,
-  imports: [FormsModule],
+  imports: [
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    CardModule,
+    MessageModule,
+    FloatLabelModule,
+  ],
   templateUrl: './hello.component.html',
   styleUrl: './hello.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

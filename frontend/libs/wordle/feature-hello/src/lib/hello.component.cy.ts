@@ -1,6 +1,7 @@
 import { HelloComponent } from './hello.component';
 import { HelloApiService, GreetingResponse } from '@wordle-kata/data-access';
 import { of, throwError, delay } from 'rxjs';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 interface StubHelloApiService {
   getGreeting: Cypress.Agent<sinon.SinonStub>;
@@ -17,15 +18,21 @@ describe('HelloComponent', () => {
 
   it('should mount the component', () => {
     cy.mount(HelloComponent, {
-      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }],
+      providers: [
+        { provide: HelloApiService, useValue: stubHelloApiService },
+        provideAnimations(),
+      ],
     });
 
-    cy.contains('h1', 'Hello World Demo').should('be.visible');
+    cy.contains('Hello World Demo').should('be.visible');
   });
 
   it('should display default name in input field', () => {
     cy.mount(HelloComponent, {
-      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }],
+      providers: [
+        { provide: HelloApiService, useValue: stubHelloApiService },
+        provideAnimations(),
+      ],
     });
 
     cy.get('#nameInput').should('have.value', 'World');
@@ -33,7 +40,10 @@ describe('HelloComponent', () => {
 
   it('should update name when input changes', () => {
     cy.mount(HelloComponent, {
-      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }],
+      providers: [
+        { provide: HelloApiService, useValue: stubHelloApiService },
+        provideAnimations(),
+      ],
     });
 
     // Arrange & Act
@@ -50,7 +60,10 @@ describe('HelloComponent', () => {
     };
 
     cy.mount(HelloComponent, {
-      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }],
+      providers: [
+        { provide: HelloApiService, useValue: stubHelloApiService },
+        provideAnimations(),
+      ],
     }).then(({ component }) => {
       // Arrange
       stubHelloApiService.getGreeting.returns(of(mockResponse));
@@ -59,7 +72,7 @@ describe('HelloComponent', () => {
     });
 
     // Act
-    cy.get('button').contains('Get Greeting').click();
+    cy.get('button').click();
 
     // Assert - Behavior verification (MOCK usage)
     cy.get('@getGreeting').should('have.been.calledWith', 'Alice');
@@ -70,23 +83,29 @@ describe('HelloComponent', () => {
   it('should display error when API call fails', () => {
     // NOTE: STUB usage - provides error response, no verification
     cy.mount(HelloComponent, {
-      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }],
+      providers: [
+        { provide: HelloApiService, useValue: stubHelloApiService },
+        provideAnimations(),
+      ],
     }).then(() => {
       // Arrange - Stub returns error
       stubHelloApiService.getGreeting.returns(throwError(() => new Error('Network error')));
     });
 
     // Act
-    cy.get('button').contains('Get Greeting').click();
+    cy.get('button').click();
 
     // Assert - State verification only
-    cy.get('.error-message').should('contain', 'Failed to fetch greeting');
+    cy.get('p-message').should('contain', 'Failed to fetch greeting');
   });
 
   it('should show loading state during API call', () => {
     // NOTE: STUB usage - provides delayed response, no verification
     cy.mount(HelloComponent, {
-      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }],
+      providers: [
+        { provide: HelloApiService, useValue: stubHelloApiService },
+        provideAnimations(),
+      ],
     }).then(() => {
       // Arrange - Stub returns delayed observable
       const mockResponse: GreetingResponse = {
@@ -96,17 +115,20 @@ describe('HelloComponent', () => {
     });
 
     // Act
-    cy.get('button').contains('Get Greeting').click();
+    cy.get('button').click();
 
     // Assert - State verification only
-    cy.get('button').should('contain', 'Loading...');
+    cy.get('button .p-button-loading-icon').should('exist');
     cy.get('button').should('be.disabled');
   });
 
   it('should clear error when making new request', () => {
     // NOTE: STUB usage - provides different responses, no verification
     cy.mount(HelloComponent, {
-      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }],
+      providers: [
+        { provide: HelloApiService, useValue: stubHelloApiService },
+        provideAnimations(),
+      ],
     }).then(({ component }) => {
       // Arrange - Stub returns error on first call
       stubHelloApiService.getGreeting
@@ -116,7 +138,7 @@ describe('HelloComponent', () => {
     });
 
     // Verify error is shown
-    cy.get('.error-message').should('be.visible');
+    cy.get('p-message').should('be.visible');
 
     // Arrange - Stub returns success on subsequent calls
     cy.then(() => {
@@ -126,10 +148,10 @@ describe('HelloComponent', () => {
     });
 
     // Act - make new request
-    cy.get('button').contains('Get Greeting').click();
+    cy.get('button').click();
 
     // Assert - State verification only
-    cy.get('.error-message').should('not.exist');
+    cy.get('p-message').should('not.exist');
     cy.get('.greeting-result').should('be.visible');
   });
 });
