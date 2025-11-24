@@ -1,6 +1,6 @@
 # Hello World Frontend
 
-Angular 21 frontend application using standalone components, signals, modern Angular patterns, and **100% code coverage**.
+Angular 21 frontend application using standalone components, signals, Nx workspace, modern Angular patterns, and **100% code coverage**.
 
 ## Architecture
 
@@ -10,16 +10,20 @@ This application follows modern Angular best practices:
 - **Signals**: Reactive state management using Angular Signals
 - **OnPush Change Detection**: Optimized change detection strategy
 - **Dependency Injection**: Using `inject()` function instead of constructor injection
-- **Layer-Based Organization**:
-  - `hello/hello-api.service.ts`: Data layer (API communication)
-  - `hello/hello.component.ts`: Feature/presentation layer
-  - `app.component.ts`: Root application component
+- **Library-Based Organization**: Nx-style apps/ + libs/ structure with path aliases
+  - `@wordle-kata/data-access`: Data layer (API services)
+  - `@wordle-kata/feature-hello`: Feature components
+  - `@wordle-kata/ui`: Shared UI components
+  - `@wordle-kata/shell`: Application shell
 
 ## Technologies
 
 - **Angular**: 21.0.0
 - **TypeScript**: 5.9.3
 - **RxJS**: 7.8.2
+- **Nx**: 22.1.1 (hybrid mode with build caching)
+- **PrimeNG**: 20.3.0 (UI component library)
+- **PrimeIcons**: 7.0.0 (icon library)
 - **Cypress**: 15.7.0 (component testing)
 - **ESLint**: 9.39.1 with angular-eslint 20.6.0
 - **Prettier**: 3.6.2
@@ -29,10 +33,10 @@ This application follows modern Angular best practices:
 
 **100% coverage** achieved using manual Istanbul instrumentation:
 
-- **Statements**: 100% (22/22)
+- **Statements**: 100% (50/50)
 - **Branches**: 100% (0/0)
-- **Functions**: 100% (5/5)
-- **Lines**: 100% (20/20)
+- **Functions**: 100% (11/11)
+- **Lines**: 100% (44/44)
 
 **Tests**: 10 Cypress component tests (3 service + 7 component)
 
@@ -74,8 +78,8 @@ The API URL is externalized via Angular environment files for flexible deploymen
 
 ### Configuration Files
 
-- **Development**: `src/environments/environment.ts` → `http://localhost:8080/api`
-- **Production**: `src/environments/environment.prod.ts` → `/api` (relative URL, same domain)
+- **Development**: `apps/hello-world-frontend/src/environments/environment.ts` → `http://localhost:8080/api`
+- **Production**: `apps/hello-world-frontend/src/environments/environment.prod.ts` → `/api` (relative URL, same domain)
 
 ### Build Configurations
 
@@ -250,19 +254,39 @@ Build output will be in `dist/hello-world-frontend/` directory.
 
 ```
 frontend/
-├── src/
-│   ├── app/
-│   │   ├── hello/
-│   │   │   ├── hello-api.service.ts       # API service (data layer)
-│   │   │   ├── hello-api.service.cy.ts    # Service tests (3 tests)
-│   │   │   ├── hello.component.ts         # Feature component
-│   │   │   ├── hello.component.html       # Component template
-│   │   │   ├── hello.component.scss       # Component styles
-│   │   │   └── hello.component.cy.ts      # Component tests (7 tests)
-│   │   └── app.component.ts               # Root component
-│   ├── main.ts                            # Application bootstrap
-│   ├── index.html                         # HTML entry point
-│   └── styles.scss                        # Global styles
+├── apps/
+│   └── hello-world-frontend/
+│       └── src/
+│           ├── environments/
+│           │   ├── environment.ts         # Development config
+│           │   └── environment.prod.ts    # Production config
+│           ├── main.ts                    # Application bootstrap
+│           ├── index.html                 # HTML entry point
+│           └── styles.scss                # Global styles
+├── libs/
+│   └── wordle/
+│       ├── data-access/
+│       │   └── src/
+│       │       ├── index.ts               # Public API exports
+│       │       └── lib/services/
+│       │           ├── hello-api.service.ts    # API service
+│       │           └── hello-api.service.cy.ts # Service tests (3 tests)
+│       ├── feature-hello/
+│       │   └── src/
+│       │       ├── index.ts               # Public API exports
+│       │       └── lib/
+│       │           ├── hello.component.ts      # Feature component
+│       │           ├── hello.component.html    # Component template
+│       │           ├── hello.component.scss    # Component styles
+│       │           └── hello.component.cy.ts   # Component tests (7 tests)
+│       ├── ui/
+│       │   └── src/
+│       │       └── index.ts               # Shared UI components (placeholder)
+│       └── shell/
+│           └── src/
+│               ├── index.ts               # Public API exports
+│               └── lib/
+│                   └── app.component.ts   # Root application component
 ├── eslint-rules/
 │   ├── index.js                           # Custom ESLint plugin
 │   └── no-hardcoded-urls.js               # Loose coupling rule
@@ -277,15 +301,75 @@ frontend/
 │   └── tsconfig.json                      # Cypress TypeScript config
 ├── coverage/                               # Coverage reports (generated)
 ├── .nycrc                                  # NYC coverage configuration
+├── nx.json                                 # Nx workspace configuration
+├── tsconfig.base.json                      # Base TypeScript config with path aliases
 ├── angular.json                            # Angular CLI configuration
 ├── cypress.config.ts                       # Cypress configuration
 ├── cypress.webpack.config.js               # Custom webpack for coverage
 ├── tsconfig.json                           # TypeScript configuration
 ├── eslint.config.mjs                       # ESLint configuration
 ├── .prettierrc                             # Prettier configuration
-├── package.json                            # Dependencies and scripts
+├── package.json                            # Dependencies and scripts (Nx-integrated)
 ├── COVERAGE.md                             # Coverage setup documentation
 └── README.md                               # This file
+```
+
+## Nx Workspace
+
+This project uses **Nx 22.1.1 in hybrid mode**, which means:
+- Nx wraps Angular CLI commands for build caching
+- All npm scripts still work (backward compatible)
+- Nx caching enabled for `build`, `lint`, and `test` targets
+- Future-ready for monorepo expansion
+
+**Commands:**
+```bash
+# Using npm scripts (familiar)
+npm start          # Runs: nx serve hello-world-frontend
+npm run build      # Runs: nx build hello-world-frontend
+npm run lint       # Runs: nx lint hello-world-frontend
+npm test           # Runs: cypress run --component
+
+# Direct Nx commands (advanced)
+nx serve hello-world-frontend
+nx build hello-world-frontend --configuration=production
+nx lint hello-world-frontend
+nx reset  # Clear Nx cache
+```
+
+**Path Aliases:**
+All libraries use TypeScript path aliases configured in `tsconfig.base.json`:
+- `@wordle-kata/data-access` → `libs/wordle/data-access/src/index.ts`
+- `@wordle-kata/feature-hello` → `libs/wordle/feature-hello/src/index.ts`
+- `@wordle-kata/ui` → `libs/wordle/ui/src/index.ts`
+- `@wordle-kata/shell` → `libs/wordle/shell/src/index.ts`
+
+## PrimeNG UI Library
+
+**PrimeNG 20.3.0** is integrated and ready for use:
+- 90+ production-ready Angular components
+- Enterprise-grade UI components (data tables, forms, overlays, menus, charts, etc.)
+- Excellent accessibility (WCAG 2.0 AA compliant)
+- Comprehensive documentation at [primeng.org](https://primeng.org/)
+
+**Note:** PrimeNG 20.3.0 uses a new theming system. For production usage, install the `@primeng/themes` package or use CDN links. See [PrimeNG theming docs](https://primeng.org/theming) for details.
+
+**Example Usage:**
+```typescript
+import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+
+@Component({
+  standalone: true,
+  imports: [ButtonModule, CardModule],
+  template: `
+    <p-card header="Title">
+      <p>Content</p>
+      <p-button label="Click Me"></p-button>
+    </p-card>
+  `
+})
+export class MyComponent { }
 ```
 
 ## Key Features

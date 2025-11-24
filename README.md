@@ -128,15 +128,16 @@ Your backend follows **Hexagonal Architecture** with strict layer separation. As
 - **Testing**: JUnit 5 + AssertJ + ArchUnit (12 architecture rules enforced)
 - **Coverage**: JaCoCo 0.8.12 - **100%** (21 tests: 9 behavior + 12 ArchUnit)
 
-### Frontend (Modern Angular)
-Your frontend uses **Angular 21** with modern patterns. As you build the Wordle UI:
+### Frontend (Modern Angular + Nx)
+Your frontend uses **Angular 21** with modern patterns and **Nx workspace**. As you build the Wordle UI:
 - **Standalone components**: No NgModules needed
 - **Signals for state**: Reactive, performant state management
-- **Layer-based organization**: Keep it clean and organized
+- **Library-based organization**: Nx-style apps/ + libs/ structure with path aliases
+- **PrimeNG UI library**: 90+ production-ready components for rapid development
 - **Component tests with Cypress**: Real browser testing
 
 **Current state:**
-- **Tech**: Angular 21, TypeScript 5.9.3, Cypress 15.7.0
+- **Tech**: Angular 21, TypeScript 5.9.3, Nx 22.1.1, PrimeNG 20.3.0, Cypress 15.7.0
 - **Code Quality**: ESLint 9.39.1 + Prettier 3.6.2 (auto-enforced)
 - **Coverage**: Custom Istanbul instrumentation - **100%** (10 Cypress component tests)
 
@@ -147,7 +148,7 @@ Your frontend uses **Angular 21** with modern patterns. As you build the Wordle 
 | Project | Instructions | Branches | Lines | Methods/Functions | Tests |
 |---------|--------------|----------|-------|-------------------|-------|
 | **Backend** | 100% (137/137) | 100% (6/6) | 100% (25/25) | 100% (11/11) | 21 |
-| **Frontend** | 100% (22/22) | 100% (0/0) | 100% (20/20) | 100% (5/5) | 10 |
+| **Frontend** | 100% (50/50) | 100% (0/0) | 100% (44/44) | 100% (11/11) | 10 |
 
 **Your challenge:** Keep it at 100% as you replace Hello World with Wordle! 🎯
 
