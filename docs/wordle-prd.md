@@ -90,106 +90,147 @@ This document outlines the requirements for building a web-based Wordle game app
 
 ## 4. Functional Requirements
 
-### 4.1 Phase 1: Minimum Viable Product (MVP)
+### 4.1 Milestone 1: Basic Game (Stories 001-006)
 
-#### FR1.1: Game Initialization
+#### M1.1 (Story 001) Game Initialization
 - **Given** a user opens the application
 - **When** the game loads
-- **Then** a hardcoded 5-letter target word is set (e.g., "CRANE")
-- **And** the game is ready to accept guesses
+- **Then** set a hardcoded 5-letter target word (e.g., "CRANE")
+- **And** ensure the game is ready to accept guesses immediately
 
-#### FR1.2: Accept Guess Input
+#### M1.2 (Stories 001-003) Accept Guess Input
 - **Given** the game is active
 - **When** the user types in the input field
-- **Then** accept alphabetic characters only
-- **And** limit input to 5 characters maximum
+- **Then** accept alphabetic characters only, ignoring other keystrokes
+- **And** limit input to 5 characters maximum, silently truncating excess input
 
-#### FR1.3: Basic Validation
-- **Given** the user submits a guess
-- **When** the guess is evaluated
-- **Then** validate the guess is exactly 5 letters
-- **And** validate all characters are alphabetic
-- **And** reject invalid guesses with error message
+#### M1.3 (Story 004) Submission Guardrails
+- **Given** the user interacts with the submit action
+- **When** the guess length is not 5 characters
+- **Then** show the error "Word must be exactly 5 letters"
+- **And** disable submission via both button and Enter key until 5 letters are present
 
-#### FR1.4: Show Result
+#### M1.4 (Stories 005-006) Result Feedback
 - **Given** a valid guess is submitted
 - **When** the guess is evaluated against the target word
-- **Then** display "Correct!" if guess matches target word
-- **Or** display "Incorrect. Try again." if guess does not match
+- **Then** display "You won!" for exact matches and "Incorrect. Try again." otherwise
+- **And** clear the input for the next attempt when incorrect
 
-#### FR1.5: Display Target Word
+#### M1.5 (Story 006) Reveal Target Word
 - **Given** the game has ended (win or 6 failed attempts)
 - **When** the final result is shown
 - **Then** reveal the target word to the user
 
-**MVP Success Criteria:**
-- ✅ User can input a 5-letter word
-- ✅ System validates input format
-- ✅ System checks if guess matches target word
-- ✅ User sees win/loss result
-- ✅ 100% test coverage on all logic
+**Milestone 1 Success Criteria:**
+- ✅ Players can enter, validate, and submit 5-letter guesses
+- ✅ Immediate win/try-again feedback is visible
+- ✅ Game reveals the target word when play stops
+- ✅ 100% test coverage on core logic
 
 ---
 
-### 4.2 Phase 2: Core Gameplay
+### 4.2 Milestone 2: Game Progress (Stories 007-010)
 
-#### FR2.1: Color-Coded Feedback
+#### M2.1 (Story 007) Guess Counter
+- **Given** the game has started
+- **When** the player submits each valid guess
+- **Then** update the counter (e.g., "Guess 3/6") so progress is always visible
+
+#### M2.2 (Story 008) Attempt Limit Enforcement
+- **Given** the player has reached six guesses or has already won
+- **When** the UI renders
+- **Then** disable the input field and submit button
+- **And** prevent additional keyboard input from altering the current row
+
+#### M2.3 (Stories 009-010) Win/Loss Messaging
+- **Given** the player submits a guess
+- **When** all letters are correct
+- **Then** display celebratory copy that varies by attempt (e.g., "Genius!", "Magnificent!", "Great!")
+- **Else When** six incorrect guesses occur
+- **Then** display "Game Over! The word was: [WORD]" while revealing the word and locking the UI
+
+**Milestone 2 Success Criteria:**
+- ✅ Guess counter mirrors actual attempts
+- ✅ No guesses allowed after six tries or a win
+- ✅ Distinct win/loss messaging matches the stories
+
+---
+
+### 4.3 Milestone 3: Letter Feedback (Stories 011-015)
+
+#### M3.1 (Stories 011-014) Color-Coded Feedback
 - **Given** a valid guess is submitted
-- **When** the guess is evaluated
-- **Then** each letter receives color coding:
-  - **Green** if letter matches target at same position
-  - **Yellow** if letter exists in target but different position
-  - **Gray** if letter does not exist in target
+- **When** evaluating each letter left-to-right
+- **Then** assign colors with green taking priority over yellow and gray for absent letters
+- **And** handle duplicates by only coloring as many instances as exist in the target word
 
-**Color Assignment Rules:**
-- Process letters left-to-right
-- Green letters take priority over yellow
-- Handle duplicate letters correctly:
-  - If target has one 'A' and guess has two 'A's:
-    - First matching 'A' gets green/yellow
-    - Second 'A' gets gray
+#### M3.2 (Story 015) Guess History Display
+- **Given** at least one guess has been submitted
+- **When** the game board renders
+- **Then** list previous guesses in order, showing per-letter colors that match the evaluation rules
 
-#### FR2.2: Guess Limit Tracking
-- **Given** a game session
-- **When** the user submits guesses
-- **Then** track the number of guesses made (max 6)
-- **And** display remaining attempts
-- **And** prevent additional guesses after 6 attempts
-
-#### FR2.3: Word Validation
-- **Given** the user submits a guess
-- **When** validation is performed
-- **Then** check against a dictionary/word list
-- **And** reject invalid/non-existent words with message
-- **And** only accept real English words
-
-#### FR2.4: Win/Loss Detection
-- **Given** the user submits a guess
-- **When** the guess is evaluated
-- **Then** detect win if all letters are green
-- **Or** detect loss if 6 incorrect guesses made
-- **And** end the game appropriately
-- **And** display win/loss message
-
-#### FR2.5: Visual Grid Display
-- **Given** the user has made one or more guesses
-- **When** the game UI is rendered
-- **Then** display a 6x5 grid of letter boxes
-- **And** show previous guesses in order (top to bottom)
-- **And** color-code each letter box appropriately
-- **And** show empty rows for remaining attempts
-
-**Phase 2 Success Criteria:**
-- ✅ Complete color-coding implementation
-- ✅ 6-guess limit enforced
-- ✅ Dictionary validation working
-- ✅ Win/loss detection accurate
-- ✅ Visual grid renders correctly
-- ✅ 100% test coverage maintained
+**Milestone 3 Success Criteria:**
+- ✅ Letter-by-letter colors match official Wordle behavior, including duplicates
+- ✅ Guess history persists visually for the full session
+- ✅ Keyboard/input hints stay synchronized with the evaluations
 
 ---
 
-### 4.3 Phase 3: Extended Features
+### 4.4 Milestone 4: Visual Grid (Stories 016-019)
+
+#### M4.1 (Story 016) Initial Grid Layout
+- **Given** the game loads
+- **When** the UI renders
+- **Then** display a 6x5 empty grid with neutral borders to signal six attempts
+
+#### M4.2 (Story 017) Live Row Preview
+- **Given** the player is typing the current guess
+- **When** characters are entered or deleted
+- **Then** mirror the text in the active grid row in real time, highlighting the active row visually
+
+#### M4.3 (Story 018) Row Locking with Feedback
+- **Given** the player submits a guess
+- **When** the evaluation completes
+- **Then** color the just-submitted row, lock it from further edits, and advance the active row indicator
+
+#### M4.4 (Story 019) Grid Finalization
+- **Given** the game has ended
+- **When** rendering the board
+- **Then** leave all rows read-only and remove the active row indicator to make the end state obvious
+
+**Milestone 4 Success Criteria:**
+- ✅ Grid is present from the start and previews live typing
+- ✅ Submitted rows lock with the correct colors
+- ✅ End-state grid clearly communicates win/loss
+
+---
+
+### 4.5 Milestone 5: Word Validation (Stories 020-022)
+
+#### M5.1 (Story 020) Dictionary Validation
+- **Given** the player submits a 5-letter guess
+- **When** validation occurs
+- **Then** check the guess against the curated dictionary/word list
+- **And** reject words that are not in the list
+
+#### M5.2 (Story 021) Error Experience
+- **Given** a guess fails dictionary validation
+- **When** the error is displayed
+- **Then** show "Not in word list" (or equivalent), keep focus on the input, and dismiss the error once the player starts typing again
+
+#### M5.3 (Story 022) Case Normalization
+- **Given** the player types letters in any case
+- **When** the guess is processed
+- **Then** normalize to a single case (uppercase recommended) for validation and display so comparisons remain case-insensitive
+
+**Milestone 5 Success Criteria:**
+- ✅ Only real words enter the evaluation logic
+- ✅ Errors are actionable and disappear on new input
+- ✅ Case handling is consistent between validation, grid, and keyboard
+
+---
+
+### 4.6 Post-Milestone Enhancements (Advanced Growth Path)
 
 #### FR3.1: Random Word Selection
 - **Given** a new game starts
@@ -370,6 +411,20 @@ Wordle 234 4/6
 - Clear indication of active category
 
 ---
+
+### 4.7 Growth Path Alignment
+
+To keep the Product Requirements Document synchronized with the incremental growth path captured in `docs/wordle-stories.md`, each milestone above maps directly to user-facing stories:
+
+| Milestone (Stories) | Scope Summary | Related PRD Phase / Feature IDs |
+|---------------------|---------------|----------------------------------|
+| **Milestone 1: Basic Game** (Stories 001-006) | Input field, alphabet-only enforcement, 5-character limit, guess submission, win/loss messaging | Section 4.1 (M1.1-M1.5) |
+| **Milestone 2: Game Progress** (Stories 007-010) | Guess counter, attempt limit, disable after win/loss, tailored win/loss copy | Section 4.2 (M2.1-M2.3) |
+| **Milestone 3: Letter Feedback** (Stories 011-015) | Letter-level feedback, duplicate handling, guess history list | Section 4.3 (M3.1-M3.2) |
+| **Milestone 4: Visual Grid** (Stories 016-019) | Static 6x5 grid, live typing preview, per-row color lock, read-only end state | Section 4.4 (M4.1-M4.4) & UI requirements in Section 7 |
+| **Milestone 5: Word Validation** (Stories 020-022) | Dictionary validation, word-list error UX, case normalization | Section 4.5 (M5.1-M5.3) |
+
+All future milestones (beyond Story 022) remain captured in the post-milestone enhancements list (Section 4.6) and should only be tackled after Milestones 1-5 are completed in order.
 
 ## 5. Non-Functional Requirements
 
@@ -552,12 +607,14 @@ Wordle 234 4/6
 - [ ] Display target word after game ends
 - [ ] 100% test coverage on all logic
 - [ ] All tests passing
+- [ ] Milestone coverage: Stories 001-006 (Basic Game) and 007-010 (Game Progress) satisfied sequentially
 
 **Definition of Done:**
 - User can play one complete game
 - All acceptance criteria met for FR1.1-FR1.5
 - Tests cover all business logic
 - Documentation updated
+- Milestones 1 & 2 validated against `docs/wordle-stories.md`
 
 ---
 
@@ -572,12 +629,14 @@ Wordle 234 4/6
 - [ ] Letter status tracking
 - [ ] Game state management
 - [ ] 100% test coverage maintained
+- [ ] Milestone coverage: Stories 011-022 (Letter Feedback, Visual Grid, Word Validation)
 
 **Definition of Done:**
 - Full Wordle game experience
 - All acceptance criteria met for FR2.1-FR2.5
 - UI matches Wordle aesthetic
 - All tests passing
+- Milestones 3-5 validated against `docs/wordle-stories.md`
 
 ---
 
