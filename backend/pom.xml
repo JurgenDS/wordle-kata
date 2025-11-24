@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
+        <version>3.4.1</version>
         <relativePath/>
     </parent>
 
@@ -24,7 +24,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <vavr.version>0.10.4</vavr.version>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.42</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <assertj.version>3.24.2</assertj.version>
     </properties>
@@ -112,6 +112,35 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <!-- Maven Surefire Plugin for running tests with suppressed warnings -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <!-- Merge JaCoCo agent with JVM arguments for warning suppression -->
+                    <argLine>
+                        ${surefire.jacoco.args}
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        --add-opens java.base/java.text=ALL-UNNAMED
+                        --add-opens java.desktop/java.awt.font=ALL-UNNAMED
+                        --enable-native-access=ALL-UNNAMED
+                        -Djdk.attach.allowAttachSelf=true
+                        -XX:+EnableDynamicAgentLoading
+                        -Djdk.instrument.traceUsage=false
+                        -XX:+UnlockExperimentalVMOptions
+                        -XX:+UseEpsilonGC
+                    </argLine>
+                    <systemPropertyVariables>
+                        <!-- Suppress ArchUnit ClassFileProcessor warnings -->
+                        <archunit.analyzeJdkClasses>false</archunit.analyzeJdkClasses>
+                        <!-- Suppress Spring Boot logging warnings during tests -->
+                        <logging.level.com.tngtech.archunit.core.importer.ClassFileProcessor>ERROR</logging.level.com.tngtech.archunit.core.importer.ClassFileProcessor>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -120,13 +149,32 @@
                     <excludes>
                         <!-- Exclude Spring Boot main class - framework boilerplate -->
                         <exclude>**/HelloWorldApplication.class</exclude>
+                        <!-- Exclude all JDK classes to prevent instrumentation errors -->
+                        <exclude>sun/**</exclude>
+                        <exclude>jdk/**</exclude>
+                        <exclude>com/sun/**</exclude>
+                        <exclude>java/**</exclude>
+                        <exclude>javax/**</exclude>
+                        <exclude>org/omg/**</exclude>
                     </excludes>
+                    <!-- Merge with Surefire's argLine instead of replacing it -->
+                    <propertyName>surefire.jacoco.args</propertyName>
+                    <!-- Append exclusions to agent arguments -->
+                    <append>true</append>
                 </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <!-- Only include our application code, effectively excluding all JDK classes -->
+                            <!-- This prevents JaCoCo from trying to instrument JDK classes that may -->
+                            <!-- have class file versions it doesn't support (e.g., version 69) -->
+                            <includes>
+                                <include>com/example/hello/**</include>
+                            </includes>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
@@ -179,6 +227,29 @@
                                 <argument>scripts/print-coverage.sh</argument>
                             </arguments>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- OWASP Dependency Check for security scanning -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.1.9</version>
+                <configuration>
+                    <failBuildOnCVSS>7</failBuildOnCVSS>
+                    <formats>
+                        <format>HTML</format>
+                        <format>JSON</format>
+                    </formats>
+                    <suppressionFiles>
+                        <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                    </suppressionFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

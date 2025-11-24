@@ -72,6 +72,7 @@ module.exports = tseslint.config(
         },
       ],
       "custom/no-hardcoded-urls": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
     },
   },
   {

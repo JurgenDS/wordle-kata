@@ -4,9 +4,7 @@ import com.example.hello.application.CommandProcessor;
 import com.example.hello.application.ports.incoming.GetGreetingCommand;
 import com.example.hello.domain.model.Greeting;
 import io.vavr.control.Either;
-import org.springframework.stereotype.Component;
 
-@Component
 public class GetGreetingProcessor implements CommandProcessor<GetGreetingCommand, Either<BusinessError, Greeting>> {
 
     @Override

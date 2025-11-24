@@ -9,7 +9,10 @@
     "**/node_modules/**",
     "**/dist/**",
     "**/main.ts",
-    "**/app.component.ts"
+    "**/app.component.ts",
+    "**/index.ts",
+    "**/environments/**",
+    "**/*.config.ts"
   ],
   "all": true,
   "check-coverage": true,

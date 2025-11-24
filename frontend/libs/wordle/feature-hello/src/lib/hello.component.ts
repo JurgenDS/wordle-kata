@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HelloApiService, GreetingResponse } from '@wordle-kata/data-access';
+import { LoggerService } from '@wordle-kata/util-logging';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { CardModule } from 'primeng/card';
@@ -9,7 +10,6 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-hello',
-  standalone: true,
   imports: [
     FormsModule,
     ButtonModule,
@@ -24,6 +24,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 })
 export class HelloComponent {
   private readonly helloApiService = inject(HelloApiService);
+  private readonly logger = inject(LoggerService);
 
   readonly name = signal<string>('World');
   readonly greeting = signal<string | null>(null);
@@ -42,7 +43,7 @@ export class HelloComponent {
       error: (err) => {
         this.error.set('Failed to fetch greeting. Make sure the backend is running.');
         this.loading.set(false);
-        console.error('Error fetching greeting:', err);
+        this.logger.error('Error fetching greeting:', err);
       },
     });
   }

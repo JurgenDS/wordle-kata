@@ -1,10 +1,10 @@
 <div class="hello-container">
   <p-card class="hello-card">
     <ng-template pTemplate="header">
-        <div class="hello-card__header">
-          <p class="hello-card__title">Hello World Demo</p>
-        </div>
-      </ng-template>
+      <div class="hello-card__header">
+        <p class="hello-card__title">Hello World Demo</p>
+      </div>
+    </ng-template>
 
     <div class="form-group">
       <label class="field-label" for="nameInput">Enter your name</label>
@@ -24,6 +24,7 @@
         type="button"
         (click)="fetchGreeting()"
         [disabled]="loading()"
+        [loading]="loading()"
         class="fetch-button"
       >
         <span class="pi pi-send" aria-hidden="true"></span>

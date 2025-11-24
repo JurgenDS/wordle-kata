@@ -18,10 +18,7 @@ describe('HelloComponent', () => {
 
   it('should mount the component', () => {
     cy.mount(HelloComponent, {
-      providers: [
-        { provide: HelloApiService, useValue: stubHelloApiService },
-        provideAnimations(),
-      ],
+      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }, provideAnimations()],
     });
 
     cy.contains('Hello World Demo').should('be.visible');
@@ -29,10 +26,7 @@ describe('HelloComponent', () => {
 
   it('should display default name in input field', () => {
     cy.mount(HelloComponent, {
-      providers: [
-        { provide: HelloApiService, useValue: stubHelloApiService },
-        provideAnimations(),
-      ],
+      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }, provideAnimations()],
     });
 
     cy.get('#nameInput').should('have.value', 'World');
@@ -40,10 +34,7 @@ describe('HelloComponent', () => {
 
   it('should update name when input changes', () => {
     cy.mount(HelloComponent, {
-      providers: [
-        { provide: HelloApiService, useValue: stubHelloApiService },
-        provideAnimations(),
-      ],
+      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }, provideAnimations()],
     });
 
     // Arrange & Act
@@ -60,10 +51,7 @@ describe('HelloComponent', () => {
     };
 
     cy.mount(HelloComponent, {
-      providers: [
-        { provide: HelloApiService, useValue: stubHelloApiService },
-        provideAnimations(),
-      ],
+      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }, provideAnimations()],
     }).then(({ component }) => {
       // Arrange
       stubHelloApiService.getGreeting.returns(of(mockResponse));
@@ -83,10 +71,7 @@ describe('HelloComponent', () => {
   it('should display error when API call fails', () => {
     // NOTE: STUB usage - provides error response, no verification
     cy.mount(HelloComponent, {
-      providers: [
-        { provide: HelloApiService, useValue: stubHelloApiService },
-        provideAnimations(),
-      ],
+      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }, provideAnimations()],
     }).then(() => {
       // Arrange - Stub returns error
       stubHelloApiService.getGreeting.returns(throwError(() => new Error('Network error')));
@@ -102,10 +87,7 @@ describe('HelloComponent', () => {
   it('should show loading state during API call', () => {
     // NOTE: STUB usage - provides delayed response, no verification
     cy.mount(HelloComponent, {
-      providers: [
-        { provide: HelloApiService, useValue: stubHelloApiService },
-        provideAnimations(),
-      ],
+      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }, provideAnimations()],
     }).then(() => {
       // Arrange - Stub returns delayed observable
       const mockResponse: GreetingResponse = {
@@ -125,10 +107,7 @@ describe('HelloComponent', () => {
   it('should clear error when making new request', () => {
     // NOTE: STUB usage - provides different responses, no verification
     cy.mount(HelloComponent, {
-      providers: [
-        { provide: HelloApiService, useValue: stubHelloApiService },
-        provideAnimations(),
-      ],
+      providers: [{ provide: HelloApiService, useValue: stubHelloApiService }, provideAnimations()],
     }).then(({ component }) => {
       // Arrange - Stub returns error on first call
       stubHelloApiService.getGreeting

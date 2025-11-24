@@ -15,14 +15,10 @@
             "outputPath": "dist/hello-world-frontend",
             "index": "apps/hello-world-frontend/src/index.html",
             "browser": "apps/hello-world-frontend/src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.json",
             "assets": [],
-            "styles": [
-              "apps/hello-world-frontend/src/styles.scss"
-            ],
+            "styles": ["apps/hello-world-frontend/src/styles.scss"],
             "scripts": []
           },
           "configurations": {
@@ -67,8 +63,6 @@
   },
   "cli": {
     "analytics": false,
-    "schematicCollections": [
-      "angular-eslint"
-    ]
+    "schematicCollections": ["angular-eslint"]
   }
 }

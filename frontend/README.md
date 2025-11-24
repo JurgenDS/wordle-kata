@@ -46,7 +46,7 @@ See [COVERAGE.md](./COVERAGE.md) for detailed setup documentation.
 ## Prerequisites
 
 - Node.js 20+ (recommended)
-- npm 10+
+- pnpm 10+ (install via `npm install -g pnpm`)
 
 ## Setup
 
@@ -57,15 +57,17 @@ See [COVERAGE.md](./COVERAGE.md) for detailed setup documentation.
 
 2. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
+
+**Note:** This project uses **pnpm** for faster, more efficient dependency management. Do not use `npm` commands as they will create conflicting lock files.
 
 ## Running the Application
 
 Start the development server:
 
 ```bash
-npm start
+pnpm start
 ```
 
 The application will be available at `http://localhost:4200`
@@ -85,13 +87,13 @@ The API URL is externalized via Angular environment files for flexible deploymen
 
 **Development build** (default):
 ```bash
-npm start
+pnpm start
 # Uses environment.ts with http://localhost:8080/api
 ```
 
 **Production build**:
 ```bash
-npm run build
+pnpm build
 # Replaces environment.ts with environment.prod.ts
 # Uses /api (relative URL for same-domain deployment)
 ```
@@ -137,7 +139,7 @@ This ensures the frontend is **loosely coupled** from the backend - no hardcoded
 ### Run tests with coverage (headless):
 
 ```bash
-npm run test:coverage
+pnpm test:coverage
 ```
 
 This will:
@@ -154,13 +156,13 @@ open coverage/index.html
 ### Run tests only (no coverage):
 
 ```bash
-npm test
+pnpm test
 ```
 
 ### Open Cypress Test Runner (interactive mode):
 
 ```bash
-npm run test:open
+pnpm test:open
 ```
 
 This will open the Cypress UI where you can:
@@ -176,7 +178,7 @@ This will open the Cypress UI where you can:
 Run ESLint to check code quality:
 
 ```bash
-npm run lint
+pnpm lint
 ```
 
 ESLint is configured with:
@@ -225,13 +227,13 @@ This ensures the frontend maintains **loose coupling** and can be deployed to di
 Check code formatting:
 
 ```bash
-npm run format:check
+pnpm format:check
 ```
 
 Auto-fix formatting:
 
 ```bash
-npm run format
+pnpm format
 ```
 
 Prettier is configured for:
@@ -245,7 +247,7 @@ Prettier is configured for:
 Build the application:
 
 ```bash
-npm run build
+pnpm build
 ```
 
 Build output will be in `dist/hello-world-frontend/` directory.
@@ -324,11 +326,11 @@ This project uses **Nx 22.1.1 in hybrid mode**, which means:
 
 **Commands:**
 ```bash
-# Using npm scripts (familiar)
-npm start          # Runs: nx serve hello-world-frontend
-npm run build      # Runs: nx build hello-world-frontend
-npm run lint       # Runs: nx lint hello-world-frontend
-npm test           # Runs: cypress run --component
+# Using pnpm scripts (familiar)
+pnpm start         # Runs: nx serve hello-world-frontend
+pnpm build         # Runs: nx build hello-world-frontend
+pnpm lint          # Runs: nx lint hello-world-frontend
+pnpm test          # Runs: cypress run --component
 
 # Direct Nx commands (advanced)
 nx serve hello-world-frontend
@@ -587,14 +589,14 @@ Ensure the custom webpack configuration is loaded:
 
 Run auto-fix:
 ```bash
-npm run lint -- --fix
+pnpm lint -- --fix
 ```
 
 ### Formatting issues
 
 Auto-fix with Prettier:
 ```bash
-npm run format
+pnpm format
 ```
 
 ### Application not connecting to backend

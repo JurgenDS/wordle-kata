@@ -9,6 +9,7 @@
 | **Build** | Nx + Vite | Nx + Angular CLI (esbuild) |
 | **State** | PrimeNG, Transloco, RxJS | PrimeNG, Signals + RxJS |
 | **UI Library** | PrimeNG | PrimeNG 20.3.0 |
+| **Package Manage** | npm | pnpm |
 
 ## Similarities with upm-client ✅
 

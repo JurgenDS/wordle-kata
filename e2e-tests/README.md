@@ -33,7 +33,7 @@ Tests the default behavior: user keeps the default "World" name and receives the
 
 ### How It Works
 
-When you run `npm run test:e2e`, Playwright:
+When you run `pnpm test:e2e`, Playwright:
 1. ✅ **Checks** if backend (port 8080) and frontend (port 4200) are running
 2. ✅ **Starts** any services that aren't running (~10-15 seconds first time)
 3. ✅ **Waits** for services to be ready (polls health endpoints)
@@ -56,22 +56,22 @@ When you run `npm run test:e2e`, Playwright:
 
 ### Run Tests (Headless)
 ```bash
-npm run test:e2e
+pnpm test:e2e
 ```
 
 ### Run Tests (Headed - Watch Browser)
 ```bash
-npm run test:e2e:headed
+pnpm test:e2e:headed
 ```
 
 ### Run Tests (UI Mode - Interactive)
 ```bash
-npm run test:e2e:ui
+pnpm test:e2e:ui
 ```
 
 ### View Test Report
 ```bash
-npm run test:e2e:report
+pnpm test:e2e:report
 ```
 
 ### Manual Cleanup (If Needed)
@@ -79,13 +79,13 @@ npm run test:e2e:report
 If tests crash and leave orphaned processes running:
 
 ```bash
-npm run cleanup
+pnpm cleanup
 ```
 
 This script:
 - 🧹 Kills any processes on ports 8080 (backend) and 4200 (frontend)
 - 🧹 Kills any Maven (`mvn -Prun`) processes
-- 🧹 Kills any npm start processes for frontend
+- 🧹 Kills any pnpm start processes for frontend
 - ✅ Safe to run anytime (no error if nothing running)
 
 **When to use:**

@@ -6,8 +6,5 @@
     "moduleResolution": "bundler",
     "types": ["cypress", "node"]
   },
-  "include": [
-    "**/*.ts",
-    "../src/**/*.cy.ts"
-  ]
+  "include": ["**/*.ts", "../src/**/*.cy.ts"]
 }

@@ -5,13 +5,13 @@ export default defineConfig({
     devServer: {
       framework: 'angular',
       bundler: 'webpack',
-      webpackConfig: require('./cypress.webpack.config.js')
+      webpackConfig: require('./cypress.webpack.config.js'),
     },
     specPattern: 'libs/**/*.cy.ts',
     supportFile: 'cypress/support/component.ts',
     setupNodeEvents(on, config) {
       require('@cypress/code-coverage/task')(on, config);
       return config;
-    }
-  }
+    },
+  },
 });

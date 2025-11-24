@@ -69,7 +69,7 @@ Think of AI as an extra mob member with infinite knowledge but no judgement—us
 **Required Tools:**
 - **Java 21** (OpenJDK or equivalent)
 - **Maven 3.9+**
-- **Node.js 20+** and **npm**
+- **Node.js 20+** and **pnpm** (install via `npm install -g pnpm`)
 - **Git** (for version control)
 - Your favorite **IDE** (IntelliJ IDEA, VS Code, Cursor, Windsurf, etc.)
 
@@ -92,10 +92,12 @@ Backend runs on `http://localhost:8080`
 ### 2. Start Frontend
 ```bash
 cd frontend
-npm install
-npm start
+pnpm install
+pnpm start
 ```
 Frontend runs on `http://localhost:4200`
+
+**Note:** Use `pnpm` for all frontend commands (not `npm`). The project uses pnpm for faster, more efficient dependency management.
 
 ### 3. Access Application
 Open `http://localhost:4200` in your browser
@@ -165,7 +167,7 @@ cd backend && mvn test
 open target/site/jacoco/index.html
 
 # Frontend (Cypress Component Tests) - with coverage report
-cd frontend && npm run test:coverage
+cd frontend && pnpm test:coverage
 open coverage/index.html
 ```
 
@@ -179,16 +181,16 @@ We have **Playwright BDD tests** that verify full-stack integration (no mocking)
 
 ```bash
 # Run E2E tests (headless) - services start automatically!
-cd e2e-tests && npm run test:e2e
+cd e2e-tests && pnpm test:e2e
 
 # Run E2E tests (watch browser)
-cd e2e-tests && npm run test:e2e:headed
+cd e2e-tests && pnpm test:e2e:headed
 
 # Interactive UI mode
-cd e2e-tests && npm run test:e2e:ui
+cd e2e-tests && pnpm test:e2e:ui
 
 # Cleanup orphaned processes (if tests crash)
-cd e2e-tests && npm run cleanup
+cd e2e-tests && pnpm cleanup
 ```
 
 ## 📚 Documentation

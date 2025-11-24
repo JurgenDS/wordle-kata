@@ -21,7 +21,8 @@
       "@wordle-kata/data-access": ["libs/wordle/data-access/src/index.ts"],
       "@wordle-kata/feature-hello": ["libs/wordle/feature-hello/src/index.ts"],
       "@wordle-kata/ui": ["libs/wordle/ui/src/index.ts"],
-      "@wordle-kata/shell": ["libs/wordle/shell/src/index.ts"]
+      "@wordle-kata/shell": ["libs/wordle/shell/src/index.ts"],
+      "@wordle-kata/util-logging": ["libs/wordle/util-logging/src/index.ts"]
     }
   },
   "angularCompilerOptions": {
