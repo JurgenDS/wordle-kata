@@ -160,9 +160,8 @@ export class SomeComponent {
 3. ✅ **Library structure is familiar** - data-access, feature-*, ui, shell
 4. ✅ **PrimeNG is available** - Same component library you know
 5. ⚠️ **No Transloco** - No i18n support, English only
-6. ⚠️ **Cypress instead of Jest** - Different testing framework, but same concepts
-7. ⚠️ **Custom webpack config** - You manage coverage instrumentation directly
-8. ⚠️ **Simpler structure** - Fewer libraries, single app
+6. ⚠️ **Custom webpack config** - You manage coverage instrumentation directly
+7. ⚠️ **Simpler structure** - Fewer libraries, single app
 
 ### Quick Adaptation Guide:
 
