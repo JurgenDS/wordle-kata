@@ -17,9 +17,10 @@ You start with a fully functional "Hello World" application with **100% test cov
 
 **What You Get:**
 - ✅ **Backend**: Java 21 + Spring Boot (Hexagonal Architecture)
-- ✅ **Frontend**: Angular 21 (standalone components + signals)
+- ✅ **Frontend**: Angular 21 + Nx + PrimeNG (standalone components + signals)
 - ✅ **100% Code Coverage**: Maintained on both projects
 - ✅ **Clean Architecture**: Enforced by ArchUnit tests
+- ✅ **Production-Ready Setup**: Nx build caching, library-based organization
 - ✅ **Working Application**: Deployable at every step
 
 ## 📋 The Specifications (Non-Negotiable!)
@@ -109,7 +110,7 @@ Both backend and frontend are **loosely coupled** via environment-based configur
 - **Details**: See [backend/README.md](./backend/README.md#cors-configuration)
 
 ### Frontend Configuration
-- **Environment Files**: `src/environments/environment.ts` (dev) and `environment.prod.ts` (prod)
+- **Environment Files**: `apps/hello-world-frontend/src/environments/environment.ts` (dev) and `environment.prod.ts` (prod)
 - **Development**: Points to `http://localhost:8080/api`
 - **Production**: Uses relative URL `/api` (same domain as frontend)
 - **Details**: See [frontend/README.md](./frontend/README.md#environment-configuration)
