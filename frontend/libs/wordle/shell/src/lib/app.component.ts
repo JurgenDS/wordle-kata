@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { HelloComponent } from './hello/hello.component';
+import { HelloComponent } from '@wordle-kata/feature-hello';
 
 @Component({
   selector: 'app-root',

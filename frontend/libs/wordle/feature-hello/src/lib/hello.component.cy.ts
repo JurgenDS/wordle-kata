@@ -1,5 +1,5 @@
 import { HelloComponent } from './hello.component';
-import { HelloApiService, GreetingResponse } from './hello-api.service';
+import { HelloApiService, GreetingResponse } from '@wordle-kata/data-access';
 import { of, throwError, delay } from 'rxjs';
 
 interface StubHelloApiService {

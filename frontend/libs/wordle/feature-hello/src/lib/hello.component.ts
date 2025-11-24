@@ -1,7 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-
 import { FormsModule } from '@angular/forms';
-import { HelloApiService, GreetingResponse } from './hello-api.service';
+import { HelloApiService, GreetingResponse } from '@wordle-kata/data-access';
 
 @Component({
   selector: 'app-hello',

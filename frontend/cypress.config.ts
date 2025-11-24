@@ -7,7 +7,7 @@ export default defineConfig({
       bundler: 'webpack',
       webpackConfig: require('./cypress.webpack.config.js')
     },
-    specPattern: 'src/**/*.cy.ts',
+    specPattern: 'libs/**/*.cy.ts',
     supportFile: 'cypress/support/component.ts',
     setupNodeEvents(on, config) {
       require('@cypress/code-coverage/task')(on, config);
