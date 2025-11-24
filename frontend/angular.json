@@ -5,23 +5,23 @@
   "projects": {
     "hello-world-frontend": {
       "projectType": "application",
-      "root": "",
-      "sourceRoot": "src",
+      "root": "apps/hello-world-frontend",
+      "sourceRoot": "apps/hello-world-frontend/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/hello-world-frontend",
-            "index": "src/index.html",
-            "browser": "src/main.ts",
+            "index": "apps/hello-world-frontend/src/index.html",
+            "browser": "apps/hello-world-frontend/src/main.ts",
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.json",
             "assets": [],
             "styles": [
-              "src/styles.scss"
+              "apps/hello-world-frontend/src/styles.scss"
             ],
             "scripts": []
           },
@@ -33,8 +33,8 @@
               "namedChunks": false,
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                  "replace": "apps/hello-world-frontend/src/environments/environment.ts",
+                  "with": "apps/hello-world-frontend/src/environments/environment.prod.ts"
                 }
               ]
             },
@@ -55,8 +55,10 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
+              "apps/hello-world-frontend/src/**/*.ts",
+              "apps/hello-world-frontend/src/**/*.html",
+              "libs/**/*.ts",
+              "libs/**/*.html"
             ]
           }
         }
