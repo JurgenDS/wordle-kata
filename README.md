@@ -28,9 +28,8 @@ Your Wordle implementation **must** follow the complete specification in:
 - **[docs/wordle-prd.md](./docs/wordle-prd.md)** - Product Requirements Document with detailed game rules, functional requirements, and acceptance criteria
 
 **Scope for this kata:**
-- ✅ Phase 1: MVP (basic game functionality)
-- ✅ Phase 2: Core Gameplay (color-coded feedback, grid, word validation)
-- 🎁 Phase 3: Extended Features (optional, for advanced teams!)
+- ✅ Milestones 1-5 (Stories 001-022) covering the full core Wordle experience
+- 🎁 Post-milestone enhancements (advanced backlog) are optional for ambitious teams
 
 ## 🗺️ Suggested Implementation Path
 
