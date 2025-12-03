@@ -2,6 +2,7 @@
   "name": "hello-world-frontend",
   "version": "1.0.0",
   "description": "Hello World Angular Frontend",
+  "license": "MIT",
   "scripts": {
     "start": "nx serve hello-world-frontend",
     "build": "nx build hello-world-frontend",
@@ -65,7 +66,8 @@
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.2",
     "typescript": "~5.9.3",
-    "typescript-eslint": "8.47.0"
+    "typescript-eslint": "8.47.0",
+    "license-checker": "^25.0.1"
   },
   "pnpm": {
     "overrides": {

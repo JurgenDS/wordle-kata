@@ -64,49 +64,107 @@ Use AI assistants (GitHub Copilot, JetBrains AI, Claude Code, ChatGPT, etc.) as 
 
 Think of AI as an extra mob member with infinite knowledge but no judgement—use it wisely! ✨
 
-## 📦 Prerequisites
+## Quick Start
 
-**Required Tools:**
-- **Java 21** (OpenJDK or equivalent)
-- **Maven 3.9+**
-- **Node.js 20+** and **pnpm** (install via `npm install -g pnpm`)
-- **Git** (for version control)
-- Your favorite **IDE** (IntelliJ IDEA, VS Code, Cursor, Windsurf, etc.)
+**Only 2 steps to get started:**
+
+### 1. Install Prerequisites (one-time)
+
+<details open>
+<summary><strong>macOS (Homebrew)</strong></summary>
+
+```bash
+brew install openjdk@21 maven node@20
+npm install -g pnpm
+```
+</details>
+
+<details>
+<summary><strong>Ubuntu/Debian</strong></summary>
+
+```bash
+sudo apt install openjdk-21-jdk maven
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install nodejs
+npm install -g pnpm
+```
+</details>
+
+<details>
+<summary><strong>Fedora/RHEL</strong></summary>
+
+```bash
+sudo dnf install java-21-openjdk-devel maven nodejs
+npm install -g pnpm
+```
+</details>
+
+<details>
+<summary><strong>Windows (winget)</strong></summary>
+
+```powershell
+winget install EclipseAdoptium.Temurin.21.JDK Apache.Maven OpenJS.NodeJS.LTS
+npm install -g pnpm
+```
+</details>
+
+<details>
+<summary><strong>Windows (Scoop)</strong></summary>
+
+```powershell
+scoop install temurin21-jdk maven nodejs-lts
+npm install -g pnpm
+```
+</details>
+
+### 2. Clone and Verify
+
+```bash
+git clone <repository-url>
+cd wordle-kata
+./quality-check.sh
+```
+
+**That's it!** The script automatically:
+- Validates all prerequisites (shows install commands if missing)
+- Installs pnpm if npm exists but pnpm doesn't
+- Installs all project dependencies (frontend, e2e-tests, backend)
+- Installs security tools (gitleaks, semgrep)
+- Runs all 14 quality checks
+
+**All checks must pass before you start coding!**
+
+## Development
+
+### Start the Application
+
+```bash
+# Terminal 1: Backend (http://localhost:8080)
+cd backend && mvn -Prun
+
+# Terminal 2: Frontend (http://localhost:4200)
+cd frontend && pnpm start
+```
+
+Open `http://localhost:4200` in your browser.
+
+**Note:** Use `pnpm` for all frontend/e2e commands (not `npm`).
+
+## 📦 Prerequisites Reference
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Java | 21 | Backend runtime (see `.java-version`) |
+| Maven | 3.9+ | Backend build tool |
+| Node.js | 20+ | Frontend runtime (see `.nvmrc`) |
+| pnpm | latest | Frontend package manager |
+| Git | any | Version control |
 
 **Recommended Knowledge:**
 - Familiarity with TDD principles
 - Basic understanding of Hexagonal Architecture (or willingness to learn!)
 - Experience with Java/Spring Boot and TypeScript/Angular (or strong fundamentals)
 - Knowledge of how Wordle works (play a few games at [nytimes.com/games/wordle](https://www.nytimes.com/games/wordle))
-
-## Quick Start
-
-### 1. Start Backend
-```bash
-cd backend
-mvn clean install
-mvn -Prun
-```
-Backend runs on `http://localhost:8080`
-
-### 2. Start Frontend
-```bash
-cd frontend
-pnpm install
-pnpm start
-```
-Frontend runs on `http://localhost:4200`
-
-**Note:** Use `pnpm` for all frontend commands (not `npm`). The project uses pnpm for faster, more efficient dependency management.
-
-### 3. Access Application
-Open `http://localhost:4200` in your browser
-
-### 4. Verify Quality Gates
-```bash
-./quality-check.sh
-```
-Runs all 10 quality checks (tests, linting, coverage, security). **All checks must pass before you start coding!**
 
 ## Configuration
 

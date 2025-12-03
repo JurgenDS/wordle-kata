@@ -14,3 +14,16 @@ Thumbs.db
 
 # Dependencies
 node_modules/
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Build outputs and caches
+.angular/
+dist/
+target/
+.nx/
+.nyc_output/
+coverage/
