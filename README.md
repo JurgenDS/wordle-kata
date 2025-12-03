@@ -49,7 +49,7 @@ Each story is designed for:
 **For Mob/Ensemble Teams:**
 1. **Start small**: Pick Story 001 or create your own first step
 2. **Red-Green-Refactor**: Write a failing test, make it pass, clean up
-3. **Keep it green**: Never break the build or lose coverage
+3. **Keep it green**: Never break the build, coverage, or quality checks
 4. **Rotate frequently**: Switch drivers every 5-10 minutes
 5. **Collaborate**: Discuss, debate, learn together!
 
@@ -102,6 +102,12 @@ Frontend runs on `http://localhost:4200`
 ### 3. Access Application
 Open `http://localhost:4200` in your browser
 
+### 4. Verify Quality Gates
+```bash
+./quality-check.sh
+```
+Runs all 10 quality checks (tests, linting, coverage, security). **All checks must pass before you start coding!**
+
 ## Configuration
 
 Both backend and frontend are **loosely coupled** via environment-based configuration:
@@ -127,7 +133,7 @@ Your backend follows **Hexagonal Architecture** with strict layer separation. As
 - **Test everything**: Behavior tests + ArchUnit rules
 
 **Current state:**
-- **Tech**: Java 21, Spring Boot 3.2.0, Vavr (Either pattern)
+- **Tech**: Java 21, Spring Boot 3.4.1, Vavr (Either pattern)
 - **Testing**: JUnit 5 + AssertJ + ArchUnit (12 architecture rules enforced)
 - **Coverage**: JaCoCo 0.8.12 - **100%** (21 tests: 9 behavior + 12 ArchUnit)
 
@@ -218,6 +224,7 @@ cd e2e-tests && pnpm cleanup
 - ✅ Pick your first story (or create your own tiny first step)
 - ✅ Write a test (RED), make it pass (GREEN), clean it up (REFACTOR)
 - ✅ Keep the app working and coverage at 100%
+- ✅ Run quality checks before every commit
 - ✅ Use AI tools to help, but understand everything you commit
 - ✅ Collaborate, learn, and have fun!
 

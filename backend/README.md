@@ -18,19 +18,28 @@ This application follows **Hexagonal Architecture** with these layers:
 - **Command Processor Pattern**: Commands define operations, processors implement them
 - **Either Pattern** (Vavr): Business errors returned as `Either<BusinessError, T>`
 - **Value Objects**: Immutable domain objects (Greeting)
-- **Fail-Fast Validation**: Domain objects validate in constructor
+- **Factory Method Validation**: Domain objects validate in factory methods (SpotBugs compliant)
 
 ## Technologies
 
-- **Java**: 21
-- **Spring Boot**: 3.2.0
+### Core
+- **Java**: 21 (LTS)
+- **Spring Boot**: 3.4.1
 - **Maven**: 3.9+
 - **Vavr**: 0.10.4 (functional programming)
-- **Lombok**: 1.18.36 (boilerplate reduction)
+- **Lombok**: 1.18.42 (boilerplate reduction)
+- **MapStruct**: 1.6.3 (object mapping)
+
+### Testing & Coverage
 - **JUnit 5**: 5.x (testing framework)
-- **AssertJ**: 3.x (fluent assertions)
+- **AssertJ**: 3.24.2 (fluent assertions)
 - **JaCoCo**: 0.8.12 (code coverage)
 - **ArchUnit**: 1.3.0 (architecture testing)
+
+### Static Analysis & Security
+- **SpotBugs**: 4.8.6.6 (bug detection)
+- **FindSecBugs**: 1.13.0 (security bug detection)
+- **OWASP Dependency Check**: 12.1.9 (CVE scanning)
 
 ## Code Coverage
 
@@ -293,9 +302,9 @@ backend/
 
 ### Domain Layer
 - `domain/model/Greeting.java`: Immutable value object representing a greeting
-  - Validates message is not blank
-  - Fail-fast principle
+  - Validates message is not blank (in factory method)
   - Factory method pattern (`Greeting.of()`)
+  - SpotBugs compliant (no constructor exceptions)
 
 ### Application Layer
 - `application/ports/incoming/GetGreetingCommand.java`: Command to get greeting
@@ -467,7 +476,7 @@ This project follows:
 - Exceptions only for unexpected technical errors
 
 **Validation:**
-- Fail-fast in constructors
+- Fail-fast in factory methods (SpotBugs compliant)
 - Domain objects always valid after construction
 - Validate at boundaries (commands, API)
 

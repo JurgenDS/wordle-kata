@@ -27,6 +27,9 @@
         <lombok.version>1.18.42</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <assertj.version>3.24.2</assertj.version>
+        <spotbugs.version>4.8.6</spotbugs.version>
+        <spotbugs-maven-plugin.version>4.8.6.6</spotbugs-maven-plugin.version>
+        <findsecbugs.version>1.13.0</findsecbugs.version>
     </properties>
 
     <dependencies>
@@ -252,6 +255,37 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- SpotBugs with FindSecBugs for static analysis and security bugs -->
+            <!-- NOTE: Requires SpotBugs 4.9.x with BCEL 6.11 for Java 25 support -->
+            <!-- See: https://github.com/spotbugs/spotbugs/issues/3564 -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>${spotbugs-maven-plugin.version}</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Medium</threshold>
+                    <failOnError>true</failOnError>
+                    <!-- Only analyze application code, skip JDK classes -->
+                    <onlyAnalyze>com.example.hello.-</onlyAnalyze>
+                    <includeFilterFile>spotbugs-include.xml</includeFilterFile>
+                    <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.h3xstream.findsecbugs</groupId>
+                            <artifactId>findsecbugs-plugin</artifactId>
+                            <version>${findsecbugs.version}</version>
+                        </plugin>
+                    </plugins>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs</artifactId>
+                        <version>${spotbugs.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
