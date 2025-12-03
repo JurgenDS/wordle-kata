@@ -6,6 +6,25 @@
 
 set -e
 
+# Parse command line arguments
+RUN_MUTATION="false"
+for arg in "$@"; do
+    case "$arg" in
+        --mutation)
+            RUN_MUTATION="true"
+            ;;
+        --help|-h)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --mutation    Run mutation testing (slow, high effort)"
+            echo "  --help, -h    Show this help message"
+            echo ""
+            exit 0
+            ;;
+    esac
+done
+
 # Get project root (script is at project root)
 PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 
@@ -38,6 +57,9 @@ SECRETS_SCAN_RESULT=""
 BACKEND_TESTS_RESULT=""
 BACKEND_SPOTBUGS_RESULT=""
 BACKEND_DEPCHECK_RESULT=""
+BACKEND_CHECKSTYLE_RESULT=""
+BACKEND_LICENSE_RESULT=""
+BACKEND_MUTATION_RESULT=""
 SEMGREP_RESULT=""
 FRONTEND_TYPECHECK_RESULT=""
 FRONTEND_LINT_RESULT=""
@@ -54,6 +76,9 @@ SECRETS_LOG=$(mktemp)
 BACKEND_LOG=$(mktemp)
 BACKEND_SPOTBUGS_LOG=$(mktemp)
 BACKEND_DEPCHECK_LOG=$(mktemp)
+BACKEND_CHECKSTYLE_LOG=$(mktemp)
+BACKEND_LICENSE_LOG=$(mktemp)
+BACKEND_MUTATION_LOG=$(mktemp)
 SEMGREP_LOG=$(mktemp)
 FRONTEND_TYPECHECK_LOG=$(mktemp)
 FRONTEND_LINT_LOG=$(mktemp)
@@ -67,15 +92,15 @@ E2E_BDDGEN_LOG=$(mktemp)
 
 # Cleanup temp files on exit
 cleanup() {
-    rm -f "$SECRETS_LOG" "$BACKEND_LOG" "$BACKEND_SPOTBUGS_LOG" "$BACKEND_DEPCHECK_LOG" "$SEMGREP_LOG" "$FRONTEND_TYPECHECK_LOG" "$FRONTEND_LINT_LOG" "$FRONTEND_FORMAT_LOG" "$FRONTEND_TESTS_LOG" "$FRONTEND_BUILD_LOG" "$FRONTEND_AUDIT_LOG" "$FRONTEND_LICENSE_LOG" "$E2E_LOG" "$E2E_BDDGEN_LOG"
+    rm -f "$SECRETS_LOG" "$BACKEND_LOG" "$BACKEND_SPOTBUGS_LOG" "$BACKEND_DEPCHECK_LOG" "$BACKEND_CHECKSTYLE_LOG" "$BACKEND_LICENSE_LOG" "$BACKEND_MUTATION_LOG" "$SEMGREP_LOG" "$FRONTEND_TYPECHECK_LOG" "$FRONTEND_LINT_LOG" "$FRONTEND_FORMAT_LOG" "$FRONTEND_TESTS_LOG" "$FRONTEND_BUILD_LOG" "$FRONTEND_AUDIT_LOG" "$FRONTEND_LICENSE_LOG" "$E2E_LOG" "$E2E_BDDGEN_LOG"
 }
 trap cleanup EXIT
 
-# Print section header
+# Print section header (bold cyan)
 print_header() {
-    printf "\n${BLUE}${BOLD}═══════════════════════════════════════════════════════════════${NC}\n"
-    printf "${BLUE}${BOLD}  %s${NC}\n" "$1"
-    printf "${BLUE}${BOLD}═══════════════════════════════════════════════════════════════${NC}\n\n"
+    printf "\n${CYAN}${BOLD}═══════════════════════════════════════════════════════════════${NC}\n"
+    printf "${CYAN}${BOLD}  %s${NC}\n" "$1"
+    printf "${CYAN}${BOLD}═══════════════════════════════════════════════════════════════${NC}\n\n"
 }
 
 # Print step
@@ -488,7 +513,7 @@ main() {
     print_step "Running: Maven tests (JUnit + ArchUnit + JaCoCo)"
     cd "$PROJECT_ROOT/backend"
 
-    if mvn clean test > "$BACKEND_LOG" 2>&1; then
+    if mvn clean verify > "$BACKEND_LOG" 2>&1; then
         print_success "Backend tests passed"
         BACKEND_TESTS_RESULT="PASS"
 
@@ -571,6 +596,45 @@ main() {
         fi
     fi
 
+    # Checkstyle (code style)
+    print_step "Running: Checkstyle (Java code style)"
+    if mvn checkstyle:check > "$BACKEND_CHECKSTYLE_LOG" 2>&1; then
+        print_success "Checkstyle passed"
+        BACKEND_CHECKSTYLE_RESULT="PASS"
+        print_detail "Java code follows style guidelines"
+    else
+        # Check if it's a configuration issue
+        if grep -q "No plugin found\|Could not find goal" "$BACKEND_CHECKSTYLE_LOG" 2>/dev/null; then
+            print_warning "Checkstyle plugin not configured"
+            BACKEND_CHECKSTYLE_RESULT="SKIP"
+        else
+            print_failure "Checkstyle violations found"
+            BACKEND_CHECKSTYLE_RESULT="FAIL"
+        fi
+    fi
+
+    # License compliance check for Maven dependencies
+    print_step "Running: License compliance check (Maven dependencies)"
+    if mvn license:add-third-party -Dlicense.useMissingFile=false > "$BACKEND_LICENSE_LOG" 2>&1; then
+        print_success "License check completed"
+        BACKEND_LICENSE_RESULT="PASS"
+        # Check for strong copyleft (AGPL) - LGPL is acceptable (weak copyleft)
+        if grep -qiE "AGPL|Affero" "$PROJECT_ROOT/backend/target/generated-sources/license/THIRD-PARTY.txt" 2>/dev/null; then
+            print_warning "Review: Some dependencies have AGPL (strong copyleft) licenses"
+            BACKEND_LICENSE_RESULT="WARN"
+        else
+            print_detail "All dependencies have acceptable licenses"
+        fi
+    else
+        if grep -q "No plugin found\|Could not find goal" "$BACKEND_LICENSE_LOG" 2>/dev/null; then
+            print_warning "License Maven Plugin not configured"
+            BACKEND_LICENSE_RESULT="SKIP"
+        else
+            print_warning "License check had issues (review recommended)"
+            BACKEND_LICENSE_RESULT="WARN"
+        fi
+    fi
+
     # ═══════════════════════════════════════════════════════════════
     # SAST (Static Application Security Testing)
     # ═══════════════════════════════════════════════════════════════
@@ -636,9 +700,7 @@ main() {
     # Tests with coverage
     print_step "Running: Cypress component tests with coverage"
     if pnpm test > "$FRONTEND_TESTS_LOG" 2>&1; then
-        print_success "Frontend tests passed"
-        FRONTEND_TESTS_RESULT="PASS"
-
+        # Tests passed, extract counts
         # Extract test counts from Cypress summary (last line: "✔  All specs passed! ... 30 30 - - -")
         # Or from individual "X passing" lines
         CYPRESS_SUMMARY=$(grep -E "All specs passed" "$FRONTEND_TESTS_LOG" | tail -1 2>/dev/null || echo "")
@@ -664,6 +726,18 @@ main() {
             FUNCS_PCT=$(echo "$COVERAGE_LINE" | awk -F'|' '{gsub(/ /, "", $4); print $4}' 2>/dev/null || echo "?")
             LINES_PCT=$(echo "$COVERAGE_LINE" | awk -F'|' '{gsub(/ /, "", $5); print $5}' 2>/dev/null || echo "?")
             print_detail "Coverage: ${LINES_PCT}% lines, ${BRANCH_PCT}% branches, ${FUNCS_PCT}% functions"
+        fi
+
+        # Verify coverage meets 100% threshold
+        FRONTEND_COV_LOG=$(mktemp)
+        if pnpm exec nyc check-coverage > "$FRONTEND_COV_LOG" 2>&1; then
+            print_success "Frontend tests passed (100% coverage verified)"
+            FRONTEND_TESTS_RESULT="PASS"
+        else
+            print_failure "Frontend tests passed but coverage below 100%"
+            FRONTEND_TESTS_RESULT="FAIL"
+            # Append coverage failure to main log
+            cat "$FRONTEND_COV_LOG" >> "$FRONTEND_TESTS_LOG"
         fi
     else
         print_failure "Frontend tests failed"
@@ -754,6 +828,44 @@ main() {
         sh "$PROJECT_ROOT/e2e-tests/scripts/cleanup-services.sh" > /dev/null 2>&1 || true
     fi
 
+    # ═══════════════════════════════════════════════════════════════
+    # MUTATION TESTING (Optional - High Effort)
+    # ═══════════════════════════════════════════════════════════════
+    # Mutation testing is slow but verifies test quality
+    # Skip by default, run with: ./quality-check.sh --mutation
+    if [ "$RUN_MUTATION" = "true" ]; then
+        print_header "MUTATION TESTING (Test Quality)"
+
+        cd "$PROJECT_ROOT/backend"
+
+        print_step "Running: PIT mutation testing"
+        print_warning "Note: This may take several minutes..."
+
+        if mvn pitest:mutationCoverage > "$BACKEND_MUTATION_LOG" 2>&1; then
+            print_success "Mutation testing passed"
+            BACKEND_MUTATION_RESULT="PASS"
+
+            # Extract mutation score from PIT output
+            MUTATION_SCORE=$(grep -oE "mutations: [0-9]+%" "$BACKEND_MUTATION_LOG" | tail -1 | grep -oE "[0-9]+" 2>/dev/null || echo "?")
+            if [ "$MUTATION_SCORE" != "?" ]; then
+                print_detail "Mutation score: ${MUTATION_SCORE}%"
+            fi
+        else
+            if grep -q "No plugin found\|Could not find goal" "$BACKEND_MUTATION_LOG" 2>/dev/null; then
+                print_warning "PIT plugin not configured"
+                BACKEND_MUTATION_RESULT="SKIP"
+            else
+                print_failure "Mutation testing failed (mutation score below threshold)"
+                BACKEND_MUTATION_RESULT="FAIL"
+            fi
+        fi
+    else
+        print_header "MUTATION TESTING (Skipped)"
+        print_warning "Mutation testing skipped (slow)"
+        print_detail "Run with: ./quality-check.sh --mutation"
+        BACKEND_MUTATION_RESULT="SKIP"
+    fi
+
     END_TIME=$(date +%s)
     DURATION=$((END_TIME - START_TIME))
 
@@ -762,8 +874,8 @@ main() {
     # ═══════════════════════════════════════════════════════════════
     print_header "QUALITY CHECK SUMMARY"
 
-    # Count results (14 checks total)
-    TOTAL_CHECKS=14
+    # Count results (17 checks total)
+    TOTAL_CHECKS=17
     PASSED_CHECKS=0
     WARNINGS=0
 
@@ -809,6 +921,32 @@ main() {
         PASSED_CHECKS=$((PASSED_CHECKS + 1))
     else
         printf "%-40s ${RED}✗ FAIL${NC}\n" "Backend OWASP Dep-Check (CVEs)"
+    fi
+
+    # Backend Checkstyle
+    if [ "$BACKEND_CHECKSTYLE_RESULT" = "PASS" ]; then
+        printf "%-40s ${GREEN}✓ PASS${NC}\n" "Backend Checkstyle (code style)"
+        PASSED_CHECKS=$((PASSED_CHECKS + 1))
+    elif [ "$BACKEND_CHECKSTYLE_RESULT" = "SKIP" ]; then
+        printf "%-40s ${YELLOW}⊘ SKIP${NC}\n" "Backend Checkstyle (not configured)"
+        PASSED_CHECKS=$((PASSED_CHECKS + 1))
+    else
+        printf "%-40s ${RED}✗ FAIL${NC}\n" "Backend Checkstyle (code style)"
+    fi
+
+    # Backend License Compliance
+    if [ "$BACKEND_LICENSE_RESULT" = "PASS" ]; then
+        printf "%-40s ${GREEN}✓ PASS${NC}\n" "Backend License (Maven deps)"
+        PASSED_CHECKS=$((PASSED_CHECKS + 1))
+    elif [ "$BACKEND_LICENSE_RESULT" = "SKIP" ]; then
+        printf "%-40s ${YELLOW}⊘ SKIP${NC}\n" "Backend License (not configured)"
+        PASSED_CHECKS=$((PASSED_CHECKS + 1))
+    elif [ "$BACKEND_LICENSE_RESULT" = "WARN" ]; then
+        printf "%-40s ${YELLOW}⚠ WARN${NC}\n" "Backend License (AGPL found)"
+        PASSED_CHECKS=$((PASSED_CHECKS + 1))
+        WARNINGS=$((WARNINGS + 1))
+    else
+        printf "%-40s ${RED}✗ FAIL${NC}\n" "Backend License (Maven deps)"
     fi
 
     # Semgrep SAST
@@ -901,6 +1039,17 @@ main() {
         printf "%-40s ${RED}✗ FAIL${NC}\n" "E2E Tests (Playwright)"
     fi
 
+    # Mutation testing (optional)
+    if [ "$BACKEND_MUTATION_RESULT" = "PASS" ]; then
+        printf "%-40s ${GREEN}✓ PASS${NC}\n" "Mutation Testing (PIT)"
+        PASSED_CHECKS=$((PASSED_CHECKS + 1))
+    elif [ "$BACKEND_MUTATION_RESULT" = "SKIP" ]; then
+        printf "%-40s ${YELLOW}⊘ SKIP${NC}\n" "Mutation Testing (use --mutation)"
+        PASSED_CHECKS=$((PASSED_CHECKS + 1))
+    else
+        printf "%-40s ${RED}✗ FAIL${NC}\n" "Mutation Testing (PIT)"
+    fi
+
     printf "─────────────────────────────────────────────────────\n"
     printf "${BOLD}Total: %d/%d passed${NC}" "$PASSED_CHECKS" "$TOTAL_CHECKS"
     if [ "$WARNINGS" -gt 0 ]; then
@@ -932,11 +1081,11 @@ main() {
             tail -50 "$BACKEND_LOG"
             printf "\n${CYAN}How to fix:${NC}\n"
             printf "  1. cd backend\n"
-            printf "  2. mvn test  (to see full output)\n"
+            printf "  2. mvn verify  (to see full output)\n"
             printf "  3. Check for:\n"
             printf "     - Failing unit tests (JUnit)\n"
             printf "     - Architecture violations (ArchUnit)\n"
-            printf "     - Coverage below threshold (JaCoCo: 80%% lines, 70%% branches)\n"
+            printf "     - Coverage below threshold (JaCoCo: 100%% required)\n"
             printf "\n"
         fi
 
@@ -965,6 +1114,49 @@ main() {
             printf "  3. Check target/dependency-check-report.html for details\n"
             printf "  4. Update vulnerable dependencies in pom.xml\n"
             printf "  5. If false positive: add suppression to suppression.xml\n"
+            printf "\n"
+        fi
+
+        if [ "$BACKEND_CHECKSTYLE_RESULT" = "FAIL" ]; then
+            printf "${RED}${BOLD}━━━ Backend Checkstyle Failed ━━━${NC}\n\n"
+            printf "${YELLOW}Style violations:${NC}\n"
+            tail -80 "$BACKEND_CHECKSTYLE_LOG"
+            printf "\n${CYAN}How to fix:${NC}\n"
+            printf "  1. cd backend\n"
+            printf "  2. mvn checkstyle:check  (to see all violations)\n"
+            printf "  3. Fix the code style issues\n"
+            printf "  4. Common issues: indentation, naming, imports\n"
+            printf "  5. Review checkstyle.xml for project style rules\n"
+            printf "\n"
+        fi
+
+        if [ "$BACKEND_LICENSE_RESULT" = "WARN" ]; then
+            printf "${YELLOW}${BOLD}━━━ Backend License Warning ━━━${NC}\n\n"
+            printf "${YELLOW}License report:${NC}\n"
+            if [ -f "$PROJECT_ROOT/backend/target/generated-sources/license/THIRD-PARTY.txt" ]; then
+                cat "$PROJECT_ROOT/backend/target/generated-sources/license/THIRD-PARTY.txt"
+            else
+                tail -50 "$BACKEND_LICENSE_LOG"
+            fi
+            printf "\n${CYAN}How to fix:${NC}\n"
+            printf "  1. cd backend\n"
+            printf "  2. mvn license:add-third-party  (generate license report)\n"
+            printf "  3. Review target/generated-sources/license/THIRD-PARTY.txt\n"
+            printf "  4. Check for GPL/LGPL/AGPL licenses that may have restrictions\n"
+            printf "  5. Replace problematic dependencies or get legal approval\n"
+            printf "\n"
+        fi
+
+        if [ "$BACKEND_MUTATION_RESULT" = "FAIL" ]; then
+            printf "${RED}${BOLD}━━━ Mutation Testing Failed ━━━${NC}\n\n"
+            printf "${YELLOW}Last 80 lines of output:${NC}\n"
+            tail -80 "$BACKEND_MUTATION_LOG"
+            printf "\n${CYAN}How to fix:${NC}\n"
+            printf "  1. cd backend\n"
+            printf "  2. mvn pitest:mutationCoverage  (to run mutation tests)\n"
+            printf "  3. Check target/pit-reports/index.html for detailed report\n"
+            printf "  4. Mutation score below 70%% indicates weak tests\n"
+            printf "  5. Add assertions or test cases to kill surviving mutants\n"
             printf "\n"
         fi
 
@@ -1022,7 +1214,7 @@ main() {
             printf "  2. pnpm test:open  (interactive mode to debug)\n"
             printf "  3. Check for:\n"
             printf "     - Failing component tests\n"
-            printf "     - Coverage below threshold (80%% lines, 70%% branches)\n"
+            printf "     - Coverage below threshold (100%% required)\n"
             printf "\n"
         fi
 

@@ -130,7 +130,7 @@ cd wordle-kata
 - Installs pnpm if npm exists but pnpm doesn't
 - Installs all project dependencies (frontend, e2e-tests, backend)
 - Installs security tools (gitleaks, semgrep)
-- Runs all 14 quality checks
+- Runs all 17 quality checks
 
 **All checks must pass before you start coding!**
 
@@ -169,17 +169,8 @@ Open `http://localhost:4200` in your browser.
 ## Configuration
 
 Both backend and frontend are **loosely coupled** via environment-based configuration:
-
-### Backend Configuration
-- **Environment Variable**: `CORS_ALLOWED_ORIGINS` (default: `http://localhost:4200`)
-- **Production Example**: `export CORS_ALLOWED_ORIGINS=https://myapp.com,https://www.myapp.com`
-- **Details**: See [backend/README.md](./backend/README.md#cors-configuration)
-
-### Frontend Configuration
-- **Environment Files**: `apps/hello-world-frontend/src/environments/environment.ts` (dev) and `environment.prod.ts` (prod)
-- **Development**: Points to `http://localhost:8080/api`
-- **Production**: Uses relative URL `/api` (same domain as frontend)
-- **Details**: See [frontend/README.md](./frontend/README.md#environment-configuration)
+- **Backend**: See [backend/README.md](./backend/README.md#cors-configuration)
+- **Frontend**: See [frontend/README.md](./frontend/README.md#environment-configuration)
 
 ## 🏛️ Architecture (Maintain This!)
 
@@ -188,12 +179,7 @@ Your backend follows **Hexagonal Architecture** with strict layer separation. As
 - **Keep the layers clean**: Domain → Application → Adapters
 - **Respect the boundaries**: ArchUnit tests will catch violations!
 - **Use Vavr's Either pattern**: For elegant error handling
-- **Test everything**: Behavior tests + ArchUnit rules
-
-**Current state:**
-- **Tech**: Java 21, Spring Boot 3.4.1, Vavr (Either pattern)
-- **Testing**: JUnit 5 + AssertJ + ArchUnit (12 architecture rules enforced)
-- **Coverage**: JaCoCo 0.8.12 - **100%** (21 tests: 9 behavior + 12 ArchUnit)
+- **Quality tools included**: Checkstyle, SpotBugs, OWASP CVE scanning, mutation testing
 
 ### Frontend (Modern Angular + Nx)
 Your frontend uses **Angular 21** with modern patterns and **Nx workspace**. As you build the Wordle UI:
@@ -210,14 +196,7 @@ Your frontend uses **Angular 21** with modern patterns and **Nx workspace**. As 
 
 ## 💯 Code Coverage (Keep It at 100%!)
 
-**Starting point** (Hello World implementation):
-
-| Project | Instructions | Branches | Lines | Methods/Functions | Tests |
-|---------|--------------|----------|-------|-------------------|-------|
-| **Backend** | 100% (137/137) | 100% (6/6) | 100% (25/25) | 100% (11/11) | 21 |
-| **Frontend** | 100% (50/50) | 100% (0/0) | 100% (44/44) | 100% (11/11) | 10 |
-
-**Your challenge:** Keep it at 100% as you replace Hello World with Wordle! 🎯
+Both backend and frontend start with **100% test coverage**. Your challenge: keep it that way as you build Wordle!
 
 Every new feature needs tests. Every refactoring must keep tests green. No excuses, no shortcuts—this is the kata way!
 
@@ -226,16 +205,14 @@ Every new feature needs tests. Every refactoring must keep tests green. No excus
 ### Unit & Component Tests (Run These Often!)
 
 ```bash
-# Backend (JUnit + ArchUnit) - with coverage report
+# Backend - see backend/README.md for all commands
 cd backend && mvn test
-open target/site/jacoco/index.html
 
-# Frontend (Cypress Component Tests) - with coverage report
-cd frontend && pnpm test:coverage
-open coverage/index.html
+# Frontend - see frontend/README.md for all commands
+cd frontend && pnpm test
 ```
 
-**Pro tip:** Run tests frequently! After every small change, make sure everything is still green. That's the TDD heartbeat! ❤️
+**Pro tip:** Run tests frequently! After every small change, make sure everything is still green. That's the TDD heartbeat!
 
 ### E2E Tests (Run Before Commits)
 

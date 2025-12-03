@@ -40,6 +40,9 @@ This application follows **Hexagonal Architecture** with these layers:
 - **SpotBugs**: 4.8.6.6 (bug detection)
 - **FindSecBugs**: 1.13.0 (security bug detection)
 - **OWASP Dependency Check**: 12.1.9 (CVE scanning)
+- **Checkstyle**: 10.21.4 (code style enforcement)
+- **License Maven Plugin**: 2.5.0 (dependency license compliance)
+- **PIT**: 1.18.2 (mutation testing)
 
 ## Code Coverage
 
@@ -178,6 +181,24 @@ open target/site/jacoco/index.html
 Or on Linux:
 ```bash
 xdg-open target/site/jacoco/index.html
+```
+
+## Quality Commands
+
+All plugins are installed automatically via `mvn install`.
+
+| Command | Purpose |
+|---------|---------|
+| `mvn checkstyle:check` | Check Java code style |
+| `mvn license:add-third-party` | Check dependency licenses |
+| `mvn spotbugs:check` | Find bugs and security issues |
+| `mvn dependency-check:check` | Scan for CVEs |
+| `mvn pitest:mutationCoverage` | Run mutation testing (slow) |
+
+Or run all checks at once from the project root:
+```bash
+./quality-check.sh           # Standard checks
+./quality-check.sh --mutation # Include mutation testing
 ```
 
 ## Test Suites
