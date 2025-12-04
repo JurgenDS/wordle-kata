@@ -128,8 +128,9 @@ Your backend follows **Hexagonal Architecture** with strict layer separation. As
 - **Test everything**: Behavior tests + ArchUnit rules
 
 **Current state:**
-- **Tech**: Java 21, Spring Boot 3.2.0, Vavr (Either pattern)
-- **Testing**: JUnit 5 + AssertJ + ArchUnit
+- **Tech**: Java 21, Spring Boot 3.4.1, Vavr (Either pattern)
+- **Testing**: JUnit 5 + AssertJ + ArchUnit + PITest (mutation)
+- **Static Analysis**: SpotBugs + FindSecBugs
 - **Coverage**: JaCoCo 0.8.12 - **100%**
 
 ### Frontend (Modern Angular + Nx)
