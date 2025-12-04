@@ -580,6 +580,13 @@ main() {
 
     # OWASP Dependency-Check
     print_step "Running: OWASP Dependency-Check (CVE scanning)"
+    # Load .env file if it exists (for NVD_API_KEY)
+    if [ -f "$PROJECT_ROOT/backend/.env" ]; then
+        set -a
+        . "$PROJECT_ROOT/backend/.env"
+        set +a
+        print_detail "Loaded environment variables from backend/.env"
+    fi
     if mvn dependency-check:check > "$BACKEND_DEPCHECK_LOG" 2>&1; then
         print_success "No high-severity CVEs in dependencies"
         BACKEND_DEPCHECK_RESULT="PASS"
