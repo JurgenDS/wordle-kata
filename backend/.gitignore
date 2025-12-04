@@ -32,6 +32,9 @@ build/
 # VS Code
 .vscode/
 
+# Claude AI
+.claude/
+
 # macOS
 .DS_Store
 
@@ -44,6 +47,12 @@ build/
 # Spring Boot
 application-local.yml
 application-local.properties
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+# Note: .env.example should be committed (it's a template)
 
 # Test coverage
 coverage/

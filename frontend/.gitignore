@@ -38,11 +38,8 @@ Thumbs.db
 # Angular cache
 .angular/
 
-# Nx cache
-.nx/cache
-.nx/workspace-data
+# Nx cache (entire directory)
+.nx/
 
 # ESLint cache
 .eslintcache
-
-.angular
