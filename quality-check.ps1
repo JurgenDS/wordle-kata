@@ -636,15 +636,29 @@ function Main {
 
     # OWASP Dependency-Check
     Write-Step "Running: OWASP Dependency-Check (CVE scanning)"
-    # Load .env if exists
+    # Load .env if exists (for NVD_API_KEY)
     $envFile = Join-Path $PROJECT_ROOT "backend\.env"
     if (Test-Path $envFile) {
         Get-Content $envFile | ForEach-Object {
+            # Skip comments and empty lines
             if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
-                [System.Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim())
+                $key = $matches[1].Trim()
+                $value = $matches[2].Trim()
+                # Set in both current session ($env:) and process environment
+                # This ensures Maven child processes can see it
+                Set-Item -Path "env:$key" -Value $value
+                [System.Environment]::SetEnvironmentVariable($key, $value, [System.EnvironmentVariableTarget]::Process)
             }
         }
         Write-Detail "Loaded environment variables from backend\.env"
+        # Verify NVD_API_KEY was loaded
+        if ($env:NVD_API_KEY) {
+            Write-Detail "NVD_API_KEY is set (will speed up CVE scanning)"
+        } else {
+            Write-Warning "NVD_API_KEY not found in .env file - CVE scanning may be slower"
+        }
+    } else {
+        Write-Warning "backend\.env file not found - CVE scanning may be slower without NVD_API_KEY"
     }
     try {
         $output = & mvn dependency-check:check 2>&1 | Out-String
