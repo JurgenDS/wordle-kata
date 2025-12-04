@@ -23,15 +23,16 @@ This application follows **Hexagonal Architecture** with these layers:
 ## Technologies
 
 - **Java**: 21
-- **Spring Boot**: 3.2.0
+- **Spring Boot**: 3.4.1
 - **Maven**: 3.9+
 - **Vavr**: 0.10.4 (functional programming)
-- **Lombok**: 1.18.36 (boilerplate reduction)
+- **Lombok**: 1.18.42 (boilerplate reduction)
 - **JUnit 5**: 5.x (testing framework)
 - **AssertJ**: 3.x (fluent assertions)
 - **JaCoCo**: 0.8.12 (code coverage)
 - **ArchUnit**: 1.3.0 (architecture testing)
 - **SpotBugs**: 4.9.3.0 + FindSecBugs (static analysis & security scanning)
+- **PITest**: 1.17.4 (mutation testing)
 
 ## Code Coverage
 
@@ -171,6 +172,18 @@ Or on Linux:
 ```bash
 xdg-open target/site/jacoco/index.html
 ```
+
+### Run mutation testing (optional):
+
+PITest mutation testing validates test quality by introducing code mutations:
+
+```bash
+mvn pitest:mutationCoverage
+```
+
+View report: `open target/pit-reports/index.html`
+
+**Note:** Requires Java 21. Run from project root with `./quality-check.sh --mutation` for full quality check including mutation testing.
 
 ## Test Suites
 

@@ -13,9 +13,11 @@ This project includes **minimal E2E sanity tests** using **Playwright with BDD**
 
 | Test Type | Purpose | Coverage | Speed | Count |
 |-----------|---------|----------|-------|-------|
-| **Unit Tests (Backend)** | Test business logic in isolation | 100% backend | ⚡ Fast | 21 tests |
-| **Component Tests (Frontend)** | Test UI components with mocked services | 100% frontend | ⚡ Fast | 10 tests |
+| **Unit Tests (Backend)** | Test business logic in isolation | 100% backend | ⚡ Fast | 23 tests |
+| **Component Tests (Frontend)** | Test UI components with mocked services | 100% frontend | ⚡ Fast | 30 tests |
 | **E2E Tests** | Verify full-stack integration | Critical user journeys | 🐢 Slow | 2 tests |
+
+**Tip:** Run all quality checks with `./quality-check.sh` from project root (includes E2E tests).
 
 ## Test Cases
 

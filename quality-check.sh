@@ -1,10 +1,18 @@
 #!/bin/sh
 #
-# Quality Check Script
+# Quality Check Script (macOS/Linux)
 # Runs all quality checks for backend, frontend, and e2e tests
 #
 # Usage: ./quality-check.sh [--mutation]
 #   --mutation    Run mutation testing (takes longer, ~2-5 minutes)
+#
+# Prerequisites:
+#   - Java 21 (required for SpotBugs - Java 25 not supported)
+#   - Maven 3.6+
+#   - Node.js 20+
+#   - pnpm (install: npm install -g pnpm)
+#
+# Windows users: Use quality-check.bat or quality-check.ps1 instead
 #
 
 set -e
@@ -125,16 +133,56 @@ get_java_version() {
 }
 
 get_java21_home() {
-    # Try to find Java 21 installation
+    # Try to find Java 21 installation in common locations (macOS/Linux)
+
+    # 1. Check if JAVA_HOME is already set to Java 21
+    if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+        CURRENT_VER=$("$JAVA_HOME/bin/java" -version 2>&1 | head -1 | sed -E 's/.*version "?([0-9]+).*/\1/')
+        if [ "$CURRENT_VER" = "21" ]; then
+            echo "$JAVA_HOME"
+            return
+        fi
+    fi
+
+    # 2. macOS: Homebrew
     if [ -d "$(brew --prefix openjdk@21 2>/dev/null)/libexec/openjdk.jdk/Contents/Home" ]; then
         echo "$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
-    elif [ -d "/usr/lib/jvm/java-21-openjdk" ]; then
-        echo "/usr/lib/jvm/java-21-openjdk"
-    elif [ -d "/Library/Java/JavaVirtualMachines/openjdk-21.jdk/Contents/Home" ]; then
-        echo "/Library/Java/JavaVirtualMachines/openjdk-21.jdk/Contents/Home"
-    else
-        echo ""
+        return
     fi
+
+    # 3. macOS: Standard Java install location
+    if [ -d "/Library/Java/JavaVirtualMachines/openjdk-21.jdk/Contents/Home" ]; then
+        echo "/Library/Java/JavaVirtualMachines/openjdk-21.jdk/Contents/Home"
+        return
+    fi
+
+    # 4. macOS: Temurin/Adoptium
+    for dir in /Library/Java/JavaVirtualMachines/temurin-21.*/Contents/Home; do
+        if [ -d "$dir" ]; then
+            echo "$dir"
+            return
+        fi
+    done
+
+    # 5. Linux: Common paths
+    for dir in /usr/lib/jvm/java-21-openjdk /usr/lib/jvm/java-21-openjdk-amd64 /usr/lib/jvm/java-21-openjdk-arm64 /usr/lib/jvm/temurin-21-jdk; do
+        if [ -d "$dir" ]; then
+            echo "$dir"
+            return
+        fi
+    done
+
+    # 6. SDKMAN
+    if [ -d "$HOME/.sdkman/candidates/java" ]; then
+        for dir in "$HOME/.sdkman/candidates/java"/21.*; do
+            if [ -d "$dir" ]; then
+                echo "$dir"
+                return
+            fi
+        done
+    fi
+
+    echo ""
 }
 
 #------------------------------------------------------------------------------
@@ -149,7 +197,7 @@ PREREQ_FAILED=0
 print_step "Checking Java..."
 JAVA21_HOME=$(get_java21_home)
 
-# First check if Java 21 is available via homebrew (preferred for SpotBugs)
+# First check if Java 21 is available (preferred for SpotBugs)
 if [ -n "$JAVA21_HOME" ]; then
     JAVA21_VER=$("$JAVA21_HOME/bin/java" -version 2>&1 | head -1 | sed -E 's/.*version "?([0-9]+).*/\1/')
     print_success "Java 21 found at $JAVA21_HOME"
@@ -160,19 +208,26 @@ elif check_command java; then
     if [ "$JAVA_VER" -ge 21 ] 2>/dev/null; then
         if [ "$JAVA_VER" -gt 21 ]; then
             print_warning "Java $JAVA_VER found but SpotBugs requires Java 21"
-            print_info "Install Java 21: brew install openjdk@21"
+            print_info "Install Java 21:"
+            print_info "  macOS:  brew install openjdk@21"
+            print_info "  Linux:  apt install openjdk-21-jdk"
+            print_info "  Or:     sdk install java 21-tem"
             print_info "Will skip SpotBugs check..."
         else
             print_success "Java $JAVA_VER found"
         fi
     else
         print_error "Java 21+ required, found Java $JAVA_VER"
-        print_info "Install: brew install openjdk@21"
+        print_info "Install Java 21:"
+        print_info "  macOS:  brew install openjdk@21"
+        print_info "  Linux:  apt install openjdk-21-jdk"
         PREREQ_FAILED=1
     fi
 else
     print_error "Java not found"
-    print_info "Install: brew install openjdk@21"
+    print_info "Install Java 21:"
+    print_info "  macOS:  brew install openjdk@21"
+    print_info "  Linux:  apt install openjdk-21-jdk"
     PREREQ_FAILED=1
 fi
 
@@ -183,7 +238,9 @@ if check_command mvn; then
     print_success "Maven $MVN_VER found"
 else
     print_error "Maven not found"
-    print_info "Install: brew install maven"
+    print_info "Install Maven:"
+    print_info "  macOS:  brew install maven"
+    print_info "  Linux:  apt install maven"
     PREREQ_FAILED=1
 fi
 
@@ -194,7 +251,9 @@ if check_command node; then
     print_success "Node.js $NODE_VER found"
 else
     print_error "Node.js not found"
-    print_info "Install: brew install node"
+    print_info "Install Node.js:"
+    print_info "  macOS:  brew install node"
+    print_info "  Linux:  apt install nodejs"
     PREREQ_FAILED=1
 fi
 

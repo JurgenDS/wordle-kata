@@ -33,12 +33,12 @@ This application follows modern Angular best practices:
 
 **100% coverage** achieved using manual Istanbul instrumentation:
 
-- **Statements**: 100% (50/50)
-- **Branches**: 100% (0/0)
-- **Functions**: 100% (11/11)
-- **Lines**: 100% (44/44)
+- **Statements**: 100%
+- **Branches**: 100%
+- **Functions**: 100%
+- **Lines**: 100%
 
-**Tests**: 10 Cypress component tests (3 service + 7 component)
+**Tests**: 30 Cypress component tests
 
 **Implementation**: Custom Istanbul webpack loader for Angular 21 compatibility.
 See [COVERAGE.md](./COVERAGE.md) for detailed setup documentation.
@@ -136,6 +136,8 @@ This ensures the frontend is **loosely coupled** from the backend - no hardcoded
 
 ## Running Tests
 
+**Quick option:** Run all quality checks from project root with `./quality-check.sh` (macOS/Linux) or `quality-check.bat` (Windows).
+
 ### Run tests with coverage (headless):
 
 ```bash
@@ -143,7 +145,7 @@ pnpm test:coverage
 ```
 
 This will:
-- Run all 10 Cypress component tests
+- Run all 30 Cypress component tests
 - Generate coverage report
 - Display coverage summary in terminal
 

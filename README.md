@@ -67,10 +67,10 @@ Think of AI as an extra mob member with infinite knowledge but no judgement—us
 ## 📦 Prerequisites
 
 **Required Tools:**
-- **Java 21** (OpenJDK or equivalent)
+- **Java 21** (OpenJDK or equivalent) - Required for SpotBugs static analysis
 - **Maven 3.9+**
 - **Node.js 20+** and **pnpm** (install via `npm install -g pnpm`)
-- **Cypres** (install via `pnpm cypress install`)
+- **Cypress** (install via `pnpm cypress install`)
 - **Git** (for version control)
 - Your favorite **IDE** (IntelliJ IDEA, VS Code, Cursor, Windsurf, etc.)
 
@@ -151,14 +151,33 @@ Your frontend uses **Angular 21** with modern patterns and **Nx workspace**. As 
 
 | Project | Instructions | Branches | Lines | Methods/Functions | Tests |
 |---------|--------------|----------|-------|-------------------|-------|
-| **Backend** | 100% (137/137) | 100% (6/6) | 100% (25/25) | 100% (11/11) | 21 |
-| **Frontend** | 100% (50/50) | 100% (0/0) | 100% (44/44) | 100% (11/11) | 10 |
+| **Backend** | 100% | 100% | 100% | 100% | 23 |
+| **Frontend** | 100% | 100% | 100% | 100% | 30 |
 
 **Your challenge:** Keep it at 100% as you replace Hello World with Wordle! 🎯
 
 Every new feature needs tests. Every refactoring must keep tests green. No excuses, no shortcuts—this is the kata way!
 
 ## 🧪 Running Tests
+
+### Quick Quality Check (Recommended!)
+
+Run **all quality checks** with a single command from the project root:
+
+```bash
+# macOS/Linux
+./quality-check.sh
+
+# Windows (PowerShell or CMD)
+quality-check.bat
+```
+
+This runs: prerequisites check, file size validation, backend tests + coverage + SpotBugs, frontend lint + tests + coverage, and E2E tests.
+
+**Optional:** Add `--mutation` flag for mutation testing (takes longer):
+```bash
+./quality-check.sh --mutation
+```
 
 ### Unit & Component Tests (Run These Often!)
 
