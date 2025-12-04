@@ -105,11 +105,11 @@
     "MAVEN_OPTS": "-Xmx1024m"
   },
 
+  // Note: node_modules are NOT mounted as volumes - they're created fresh each time
+  // The pnpm store (cached in docker-compose.yml) ensures fast installs
   "mounts": [
     "source=${localWorkspaceFolderBasename}-maven-cache,target=/home/vscode/.m2,type=volume",
-    "source=${localWorkspaceFolderBasename}-pnpm-cache,target=/home/vscode/.local/share/pnpm,type=volume",
-    "source=${localWorkspaceFolderBasename}-node-modules-frontend,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume",
-    "source=${localWorkspaceFolderBasename}-node-modules-e2e,target=${containerWorkspaceFolder}/e2e-tests/node_modules,type=volume"
+    "source=${localWorkspaceFolderBasename}-pnpm-cache,target=/home/vscode/.local/share/pnpm,type=volume"
   ],
 
   "hostRequirements": {
