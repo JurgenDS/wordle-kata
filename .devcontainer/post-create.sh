@@ -51,11 +51,8 @@ print_step "Installing frontend dependencies..."
 
 cd /workspace/frontend
 
-# Remove old node_modules if exists (clean install)
-if [ -d "node_modules" ]; then
-    print_warning "Removing existing node_modules..."
-    rm -rf node_modules 2>/dev/null || sudo rm -rf node_modules 2>/dev/null || true
-fi
+# Skip node_modules removal - too slow on Windows bind mounts
+# pnpm install will handle updates incrementally
 
 # Try normal install first, then sudo if it fails (Windows bind mount workaround)
 if pnpm install 2>/dev/null; then
@@ -80,11 +77,8 @@ print_step "Installing E2E test dependencies..."
 
 cd /workspace/e2e-tests
 
-# Remove old node_modules if exists (clean install)
-if [ -d "node_modules" ]; then
-    print_warning "Removing existing node_modules..."
-    rm -rf node_modules 2>/dev/null || sudo rm -rf node_modules 2>/dev/null || true
-fi
+# Skip node_modules removal - too slow on Windows bind mounts
+# pnpm install will handle updates incrementally
 
 # Try normal install first, then sudo if it fails (Windows bind mount workaround)
 if pnpm install 2>/dev/null; then
