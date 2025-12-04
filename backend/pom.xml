@@ -255,6 +255,10 @@
                     <suppressionFiles>
                         <suppressionFile>owasp-suppressions.xml</suppressionFile>
                     </suppressionFiles>
+                    <!-- NVD API Key from environment variable (NVD_API_KEY) -->
+                    <!-- If not set, Dependency-Check will download the full NVD database (slower) -->
+                    <!-- Get your free API key at: https://nvd.nist.gov/developers/request-an-api-key -->
+                    <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                 </configuration>
                 <executions>
                     <execution>

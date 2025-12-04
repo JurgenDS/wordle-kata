@@ -1,14 +1,13 @@
 @echo off
-REM Batch wrapper for mvn-with-env.ps1
-REM Usage: mvn-with-env.bat install
-REM        mvn-with-env.bat clean verify
-REM        mvn-with-env.bat dependency-check:check
+REM Batch wrapper for install-nvd-api-key.ps1
+REM Usage: .\scripts\install-nvd-api-key.bat
+REM        .\scripts\install-nvd-api-key.bat -System
 
 setlocal
 
 REM Get the directory where this batch file is located
-set "BACKEND_DIR=%~dp0"
-set "PS_SCRIPT=%BACKEND_DIR%mvn-with-env.ps1"
+set "SCRIPTS_DIR=%~dp0"
+set "PS_SCRIPT=%SCRIPTS_DIR%install-nvd-api-key.ps1"
 
 REM Check if PowerShell script exists
 if not exist "%PS_SCRIPT%" (
@@ -16,7 +15,8 @@ if not exist "%PS_SCRIPT%" (
     exit /b 1
 )
 
-REM Run PowerShell script with bypass execution policy
+REM Run PowerShell script with bypass execution policy, passing all arguments
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%PS_SCRIPT%" %*
 
 endlocal
+

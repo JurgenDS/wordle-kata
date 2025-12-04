@@ -26,14 +26,27 @@ if (Test-Path $ENV_FILE) {
         }
     }
     if ($env:NVD_API_KEY) {
-        Write-Host "NVD_API_KEY loaded (will speed up OWASP Dependency-Check)" -ForegroundColor Green
+        $keyPreview = $env:NVD_API_KEY.Substring(0, [Math]::Min(8, $env:NVD_API_KEY.Length))
+        Write-Host "NVD_API_KEY loaded: $keyPreview... (will speed up OWASP Dependency-Check)" -ForegroundColor Green
+    } else {
+        Write-Host "Warning: NVD_API_KEY not found in .env file" -ForegroundColor Yellow
+        Write-Host "  CVE scanning will be slower (downloading full NVD database)" -ForegroundColor Yellow
     }
 } else {
     Write-Host "Warning: .env file not found at $ENV_FILE" -ForegroundColor Yellow
     Write-Host "  Create it with: NVD_API_KEY=your-key-here" -ForegroundColor Yellow
+    Write-Host "  CVE scanning will be slower without API key" -ForegroundColor Yellow
+}
+
+# Verify the key is set before running Maven
+if (-not $env:NVD_API_KEY) {
+    Write-Host ""
+    Write-Host "Note: Running without NVD_API_KEY - this may take several minutes" -ForegroundColor Yellow
+    Write-Host "      Get a free API key at: https://nvd.nist.gov/developers/request-an-api-key" -ForegroundColor Cyan
 }
 
 # Run Maven with the provided arguments
+Write-Host ""
 Write-Host "Running: mvn $($MavenArgs -join ' ')" -ForegroundColor Cyan
 & mvn @MavenArgs
 

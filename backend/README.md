@@ -219,12 +219,14 @@ OWASP Dependency-Check can use an NVD API key to speed up CVE scanning. To use i
    .\mvn-with-env.ps1 dependency-check:check
    ```
 
-   **On Windows (Command Prompt):**
+   **On Windows (Command Prompt or double-click):**
    ```cmd
    cd backend
    mvn-with-env.bat install
    mvn-with-env.bat dependency-check:check
    ```
+   
+   **Or simply double-click:** `mvn-with-env.bat` (then type your Maven command)
 
    **On macOS/Linux:**
    ```bash
@@ -240,6 +242,89 @@ OWASP Dependency-Check can use an NVD API key to speed up CVE scanning. To use i
    ```
 
 **Note:** The `.env` file is automatically loaded when running `./quality-check.sh` or `.\quality-check.ps1` from the project root.
+
+### Installing NVD_API_KEY as Windows Environment Variable
+
+Instead of loading from `.env` file each time, you can install the API key as a persistent Windows environment variable:
+
+**Install (User-level - recommended, no admin required):**
+
+PowerShell:
+```powershell
+cd backend
+.\scripts\install-nvd-api-key.ps1
+```
+
+Command Prompt or double-click:
+```cmd
+cd backend
+scripts\install-nvd-api-key.bat
+```
+
+**Install (System-level - requires Administrator):**
+
+PowerShell (run as Administrator):
+```powershell
+cd backend
+.\scripts\install-nvd-api-key.ps1 -System
+```
+
+Command Prompt (run as Administrator):
+```cmd
+cd backend
+scripts\install-nvd-api-key.bat -System
+```
+
+**Uninstall:**
+
+PowerShell:
+```powershell
+cd backend
+.\scripts\uninstall-nvd-api-key.ps1
+# Or with -System flag if installed as system variable
+.\scripts\uninstall-nvd-api-key.ps1 -System
+```
+
+Command Prompt or double-click:
+```cmd
+cd backend
+scripts\uninstall-nvd-api-key.bat
+# Or with -System flag
+scripts\uninstall-nvd-api-key.bat -System
+```
+
+**Benefits:**
+- ✅ Available to all processes automatically (no need to load .env file)
+- ✅ Persists across terminal sessions and reboots
+- ✅ Works with any Maven command without wrapper scripts
+- ✅ Available to IDEs and other tools
+
+**Note:** After installation, restart your terminal/IDE for the variable to be available to all processes.
+
+### Clearing Dependency-Check Cache
+
+If Dependency-Check is slow or you're experiencing issues, you can clear the cache:
+
+**On Windows (PowerShell):**
+```powershell
+cd backend
+.\scripts\clear-dependency-check-cache.ps1
+```
+
+**On Windows (Command Prompt or double-click):**
+```cmd
+cd backend
+scripts\clear-dependency-check-cache.bat
+```
+
+**On macOS/Linux:**
+```bash
+# The cache is typically located at:
+# ~/.m2/repository/org/owasp/dependency-check-data
+rm -rf ~/.m2/repository/org/owasp/dependency-check-data
+```
+
+**Note:** After clearing the cache, the next run will download fresh data. With `NVD_API_KEY` set, this should be faster.
 
 ## Test Suites
 

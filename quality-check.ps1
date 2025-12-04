@@ -679,7 +679,14 @@ function Main {
     # OWASP Dependency-Check
     Write-Step "Running: OWASP Dependency-Check (CVE scanning)"
     # Note: .env file is already loaded before backend checks section
-    # This ensures the API key is available for dependency-check
+    # Verify NVD_API_KEY is set before running
+    if ($env:NVD_API_KEY) {
+        Write-Detail "NVD_API_KEY is set: $($env:NVD_API_KEY.Substring(0, [Math]::Min(8, $env:NVD_API_KEY.Length)))..." -NoNewline
+        Write-Detail " (will use NVD API for faster scanning)"
+    } else {
+        Write-Warning "NVD_API_KEY not set - will download full NVD database (this may take several minutes)"
+        Write-Detail "Create backend\.env with: NVD_API_KEY=your-key-here"
+    }
     try {
         $output = & mvn dependency-check:check 2>&1 | Out-String
         $output | Out-File -FilePath $script:LogFiles.BackendDepcheck -Encoding utf8
