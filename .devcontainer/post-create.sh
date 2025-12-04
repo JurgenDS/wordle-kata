@@ -173,6 +173,26 @@ if [ -f "$HOME/.zshrc" ]; then
     fi
 fi
 
+# Add .env loading to shell profiles (for NVD_API_KEY, etc.)
+ENV_LOADER='
+# Load backend .env file for NVD_API_KEY and other secrets
+if [ -f /workspace/backend/.env ]; then
+    # Convert CRLF to LF first (Windows compatibility)
+    sed -i "s/\r$//" /workspace/backend/.env 2>/dev/null || true
+    set -a
+    source /workspace/backend/.env
+    set +a
+fi
+'
+
+if ! grep -q "backend/.env" "$HOME/.bashrc" 2>/dev/null; then
+    echo "$ENV_LOADER" >> "$HOME/.bashrc"
+fi
+
+if [ -f "$HOME/.zshrc" ] && ! grep -q "backend/.env" "$HOME/.zshrc" 2>/dev/null; then
+    echo "$ENV_LOADER" >> "$HOME/.zshrc"
+fi
+
 print_success "Shell aliases configured"
 
 # ═══════════════════════════════════════════════════════════════
