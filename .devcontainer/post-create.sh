@@ -107,6 +107,45 @@ fi
 cd /workspace
 
 # ═══════════════════════════════════════════════════════════════
+# IMPORT OWASP DEPENDENCY-CHECK CACHE
+# ═══════════════════════════════════════════════════════════════
+print_step "Setting up OWASP Dependency-Check cache..."
+
+OWASP_CACHE_ZIP="/workspace/data/owasp-cache/dependency-check-data.zip"
+OWASP_TARGET_DIR="$HOME/.m2/repository/org/owasp"
+
+if [ -f "$OWASP_CACHE_ZIP" ]; then
+    if [ ! -d "$OWASP_TARGET_DIR/dependency-check-data" ]; then
+        print_step "Extracting OWASP database cache (saves 10-20 min on first build)..."
+        mkdir -p "$OWASP_TARGET_DIR"
+        unzip -q "$OWASP_CACHE_ZIP" -d "$OWASP_TARGET_DIR"
+        print_success "OWASP database cache imported"
+    else
+        print_success "OWASP database cache already exists"
+    fi
+else
+    print_warning "OWASP cache not found - first dependency-check will download database"
+    echo "  To speed up: run 'git lfs pull' to download the cache file"
+fi
+
+# ═══════════════════════════════════════════════════════════════
+# FIX WORKSPACE PERMISSIONS (Windows compatibility)
+# ═══════════════════════════════════════════════════════════════
+print_step "Fixing workspace permissions (Windows bind mount compatibility)..."
+
+# Fix ownership of workspace directories that may have been created by root or with wrong permissions
+sudo chown -R $(id -u):$(id -g) /workspace/backend 2>/dev/null || true
+sudo chown -R $(id -u):$(id -g) /workspace/frontend 2>/dev/null || true
+sudo chown -R $(id -u):$(id -g) /workspace/e2e-tests 2>/dev/null || true
+
+# Remove any existing target directory that might have wrong permissions
+if [ -d "/workspace/backend/target" ]; then
+    sudo rm -rf /workspace/backend/target 2>/dev/null || rm -rf /workspace/backend/target 2>/dev/null || true
+fi
+
+print_success "Workspace permissions fixed"
+
+# ═══════════════════════════════════════════════════════════════
 # BUILD BACKEND
 # ═══════════════════════════════════════════════════════════════
 print_step "Building backend (this may take a few minutes on first run)..."
