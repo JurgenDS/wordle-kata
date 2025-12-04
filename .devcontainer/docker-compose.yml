@@ -5,6 +5,8 @@ services:
     # Use pre-built image from GitLab Container Registry
     # Falls back to local build if image doesn't exist
     image: registry.gitlab.com/simplificationofficers/wordle-kata/devcontainer:latest
+    # Force pull from registry instead of building locally
+    pull_policy: always
     build:
       context: .
       dockerfile: Dockerfile

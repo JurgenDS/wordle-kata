@@ -61,16 +61,24 @@ This means team members don't need to build the image locally - they just pull a
    cd wordle-kata
    ```
 
-2. **Open in VS Code**:
+2. **Login to GitLab Container Registry** (required to pull the pre-built image):
+   ```bash
+   docker login registry.gitlab.com
+   ```
+   Use your GitLab username and a [Personal Access Token](https://gitlab.com/-/user_settings/personal_access_tokens) with `read_registry` scope.
+
+   > **Important**: Without this step, Docker cannot pull the pre-built image and will fall back to building locally (which takes 10-15 minutes).
+
+3. **Open in VS Code**:
    ```bash
    code .
    ```
 
-3. **Reopen in Container**:
+4. **Reopen in Container**:
    - Press `F1` and select "Dev Containers: Reopen in Container"
    - Or click the green button in the bottom-left corner and select "Reopen in Container"
 
-4. **Wait for setup**:
+5. **Wait for setup**:
    - The pre-built image will be pulled (~2-3 minutes)
    - Post-create scripts will install project dependencies
    - You'll see "SETUP COMPLETE!" when ready
