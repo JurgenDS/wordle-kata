@@ -51,16 +51,19 @@ print_step "Installing frontend dependencies..."
 
 cd /workspace/frontend
 
-# Fix permissions or remove old node_modules if owned by root
+# Remove old node_modules if exists (clean install)
 if [ -d "node_modules" ]; then
-    if ! [ -w "node_modules" ]; then
-        print_warning "Fixing node_modules permissions (may require sudo)..."
-        sudo rm -rf node_modules 2>/dev/null || rm -rf node_modules 2>/dev/null || true
-    fi
+    print_warning "Removing existing node_modules..."
+    rm -rf node_modules 2>/dev/null || sudo rm -rf node_modules 2>/dev/null || true
 fi
 
-if pnpm install; then
+# Try normal install first, then sudo if it fails (Windows bind mount workaround)
+if pnpm install 2>/dev/null; then
     print_success "Frontend dependencies installed"
+elif sudo -E pnpm install 2>/dev/null; then
+    print_success "Frontend dependencies installed (with elevated permissions)"
+    # Fix ownership after sudo install
+    sudo chown -R $(id -u):$(id -g) node_modules 2>/dev/null || true
 else
     print_warning "Frontend dependencies installation had issues"
 fi
@@ -77,16 +80,18 @@ print_step "Installing E2E test dependencies..."
 
 cd /workspace/e2e-tests
 
-# Fix permissions or remove old node_modules if owned by root
+# Remove old node_modules if exists (clean install)
 if [ -d "node_modules" ]; then
-    if ! [ -w "node_modules" ]; then
-        print_warning "Fixing node_modules permissions (may require sudo)..."
-        sudo rm -rf node_modules 2>/dev/null || rm -rf node_modules 2>/dev/null || true
-    fi
+    print_warning "Removing existing node_modules..."
+    rm -rf node_modules 2>/dev/null || sudo rm -rf node_modules 2>/dev/null || true
 fi
 
-if pnpm install; then
+# Try normal install first, then sudo if it fails (Windows bind mount workaround)
+if pnpm install 2>/dev/null; then
     print_success "E2E dependencies installed"
+elif sudo -E pnpm install 2>/dev/null; then
+    print_success "E2E dependencies installed (with elevated permissions)"
+    sudo chown -R $(id -u):$(id -g) node_modules 2>/dev/null || true
 else
     print_warning "E2E dependencies installation had issues"
 fi
