@@ -5,6 +5,21 @@ const angular = require("angular-eslint");
 const customRules = require("./eslint-rules");
 
 module.exports = tseslint.config(
+  // Global ignores (applied to all configs)
+  {
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.angular/**",
+      "**/.nx/**",
+      "**/coverage/**",
+      "**/.nyc_output/**",
+      "**/cypress/videos/**",
+      "**/cypress/screenshots/**",
+      "**/*.js.map",
+      "**/*.d.ts",
+    ],
+  },
   {
     files: ["**/*.ts"],
     ignores: [
@@ -16,9 +31,12 @@ module.exports = tseslint.config(
     extends: [
       eslint.configs.recommended,
       ...tseslint.configs.recommended,
-      ...tseslint.configs.stylistic,
+      // Stylistic rules disabled for performance (can be slow)
+      // Re-enable if you need style checks: ...tseslint.configs.stylistic,
       ...angular.configs.tsRecommended,
     ],
+    // Inline template processor - can be slow, but necessary for Angular template linting
+    // This processes Angular inline templates (template strings in components)
     processor: angular.processInlineTemplates,
     plugins: {
       "custom": customRules,
@@ -48,7 +66,8 @@ module.exports = tseslint.config(
     extends: [
       eslint.configs.recommended,
       ...tseslint.configs.recommended,
-      ...tseslint.configs.stylistic,
+      // Stylistic rules disabled for performance (can be slow)
+      // Re-enable if you need style checks: ...tseslint.configs.stylistic,
       ...angular.configs.tsRecommended,
     ],
     plugins: {

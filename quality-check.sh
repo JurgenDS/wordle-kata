@@ -686,9 +686,19 @@ main() {
 
     # Lint check
     print_step "Running: ESLint"
+    # Note: First run may be slow (building cache), subsequent runs use cache
+    # The inline template processor processes Angular templates which can be slow
     if pnpm lint > "$FRONTEND_LINT_LOG" 2>&1; then
         print_success "ESLint passed"
         FRONTEND_LINT_RESULT="PASS"
+        # Check if cache was used
+        if grep -q "Nx read the output from the cache" "$FRONTEND_LINT_LOG" 2>/dev/null; then
+            print_detail "Used Nx cache (very fast)"
+        elif [ -f "$PROJECT_ROOT/frontend/.eslintcache" ]; then
+            print_detail "ESLint cache exists (subsequent runs will be faster)"
+        else
+            print_detail "First run - cache will be built (this may take longer)"
+        fi
     else
         print_failure "ESLint failed"
         FRONTEND_LINT_RESULT="FAIL"

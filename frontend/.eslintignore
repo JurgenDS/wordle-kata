@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+**/dist/
+.angular/
+**/.angular/
+.nx/
+**/.nx/
+
+# Coverage reports
+coverage/
+**/coverage/
+.nyc_output/
+**/.nyc_output/
+
+# Test results
+cypress/videos/
+cypress/screenshots/
+playwright-report/
+test-results/
+
+# Generated files
+*.d.ts
+*.js.map
+*.css.map
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
