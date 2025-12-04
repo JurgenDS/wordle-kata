@@ -50,6 +50,15 @@ echo ""
 print_step "Installing frontend dependencies..."
 
 cd /workspace/frontend
+
+# Fix permissions or remove old node_modules if owned by root
+if [ -d "node_modules" ]; then
+    if ! [ -w "node_modules" ]; then
+        print_warning "Fixing node_modules permissions (may require sudo)..."
+        sudo rm -rf node_modules 2>/dev/null || rm -rf node_modules 2>/dev/null || true
+    fi
+fi
+
 if pnpm install; then
     print_success "Frontend dependencies installed"
 else
@@ -67,6 +76,15 @@ cd /workspace
 print_step "Installing E2E test dependencies..."
 
 cd /workspace/e2e-tests
+
+# Fix permissions or remove old node_modules if owned by root
+if [ -d "node_modules" ]; then
+    if ! [ -w "node_modules" ]; then
+        print_warning "Fixing node_modules permissions (may require sudo)..."
+        sudo rm -rf node_modules 2>/dev/null || rm -rf node_modules 2>/dev/null || true
+    fi
+fi
+
 if pnpm install; then
     print_success "E2E dependencies installed"
 else
