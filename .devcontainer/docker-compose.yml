@@ -1,15 +1,8 @@
-version: '3.8'
-
 services:
   devcontainer:
     # Use pre-built image from GitLab Container Registry
-    # Falls back to local build if image doesn't exist
+    # To build manually, use: docker build -t registry.gitlab.com/simplificationofficers/wordle-kata/devcontainer:latest .
     image: registry.gitlab.com/simplificationofficers/wordle-kata/devcontainer:latest
-    # Force pull from registry instead of building locally
-    pull_policy: always
-    build:
-      context: .
-      dockerfile: Dockerfile
     volumes:
       - ..:/workspace:cached
       # Named volumes for caches (faster than bind mounts)
