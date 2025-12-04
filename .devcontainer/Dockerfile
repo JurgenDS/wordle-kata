@@ -23,11 +23,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
+# Set JAVA_HOME - find the actual temurin directory
+RUN JAVA_DIR=$(ls -d /usr/lib/jvm/temurin-21-jdk-* 2>/dev/null | head -1) && \
+    ln -sf "$JAVA_DIR" /usr/lib/jvm/temurin-21-jdk && \
+    echo "export JAVA_HOME=/usr/lib/jvm/temurin-21-jdk" >> /etc/profile.d/java.sh && \
+    chmod +x /etc/profile.d/java.sh
+
+ENV JAVA_HOME=/usr/lib/jvm/temurin-21-jdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Install Maven
-ARG MAVEN_VERSION=3.9.9
+ARG MAVEN_VERSION=3.9.11
 RUN wget -q https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -O /tmp/maven.tar.gz \
     && tar -xzf /tmp/maven.tar.gz -C /opt \
     && ln -s /opt/apache-maven-${MAVEN_VERSION} /opt/maven \

@@ -16,7 +16,7 @@ services:
       - playwright-cache:/home/vscode/.cache/ms-playwright
     environment:
       - TZ=UTC
-      - JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
+      - JAVA_HOME=/usr/lib/jvm/temurin-21-jdk
       - MAVEN_OPTS=-Xmx1024m -XX:+UseG1GC
       - NODE_OPTIONS=--max-old-space-size=4096
       # Pass through NVD API key if set on host

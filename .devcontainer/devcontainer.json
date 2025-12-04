@@ -114,7 +114,7 @@
 
   "containerEnv": {
     "TZ": "UTC",
-    "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
+    "JAVA_HOME": "/usr/lib/jvm/temurin-21-jdk",
     "MAVEN_OPTS": "-Xmx1024m"
   },
 
