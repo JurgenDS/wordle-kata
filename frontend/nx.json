@@ -6,14 +6,7 @@
       "cache": true
     },
     "lint": {
-      "cache": true,
-      "inputs": [
-        "default",
-        "^default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/eslint.config.js",
-        "{workspaceRoot}/.eslintignore"
-      ]
+      "cache": true
     },
     "test": {
       "cache": true

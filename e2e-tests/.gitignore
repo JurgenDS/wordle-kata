@@ -2,8 +2,6 @@
 playwright-report/
 test-results/
 playwright/.cache/
-*.trace
-*.zip
 
 # Generated test files
 .features-gen/
@@ -13,13 +11,6 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-store/
-
-# Environment files (contain secrets)
-.env
-.env.local
-.env.*.local
-# Note: .env.example should be committed (it's a template)
 
 # OS files
 .DS_Store
@@ -30,9 +21,6 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
-
-# Claude AI
-.claude/
 
 # Logs
 *.log

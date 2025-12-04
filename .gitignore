@@ -14,32 +14,3 @@ Thumbs.db
 
 # Dependencies
 node_modules/
-
-# Environment files (contain secrets)
-.env
-.env.local
-.env.*.local
-# Note: .env.example should be committed (it's a template)
-
-# Build outputs and caches
-.angular/
-dist/
-target/
-.nx/
-.nyc_output/
-coverage/
-.pnpm-store/
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
-
-# ESLint cache
-.eslintcache
-
-# OWASP Dependency-Check cache
-data/owasp-cache/
-
-# E2E test outputs
-e2e-tests/playwright-report/
-e2e-tests/test-results/
-e2e-tests/.features-gen/

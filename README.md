@@ -49,7 +49,7 @@ Each story is designed for:
 **For Mob/Ensemble Teams:**
 1. **Start small**: Pick Story 001 or create your own first step
 2. **Red-Green-Refactor**: Write a failing test, make it pass, clean up
-3. **Keep it green**: Never break the build, coverage, or quality checks
+3. **Keep it green**: Never break the build or lose coverage
 4. **Rotate frequently**: Switch drivers every 5-10 minutes
 5. **Collaborate**: Discuss, debate, learn together!
 
@@ -64,110 +64,14 @@ Use AI assistants (GitHub Copilot, JetBrains AI, Claude Code, ChatGPT, etc.) as 
 
 Think of AI as an extra mob member with infinite knowledge but no judgement—use it wisely! ✨
 
-## Quick Start
+## 📦 Prerequisites
 
-**Only 2 steps to get started:**
-
-### 1. Install Prerequisites (one-time)
-
-<details open>
-<summary><strong>macOS (Homebrew)</strong></summary>
-
-```bash
-brew install openjdk@21 maven node@20
-npm install -g pnpm
-```
-</details>
-
-<details>
-<summary><strong>Ubuntu/Debian</strong></summary>
-
-```bash
-sudo apt install openjdk-21-jdk maven
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install nodejs
-npm install -g pnpm
-```
-</details>
-
-<details>
-<summary><strong>Fedora/RHEL</strong></summary>
-
-```bash
-sudo dnf install java-21-openjdk-devel maven nodejs
-npm install -g pnpm
-```
-</details>
-
-<details>
-<summary><strong>Windows (winget)</strong></summary>
-
-```powershell
-winget install EclipseAdoptium.Temurin.21.JDK Apache.Maven OpenJS.NodeJS.LTS
-npm install -g pnpm
-```
-</details>
-
-<details>
-<summary><strong>Windows (Scoop)</strong></summary>
-
-```powershell
-scoop install temurin21-jdk maven nodejs-lts
-npm install -g pnpm
-```
-</details>
-
-<details>
-<summary><strong>Windows (Chocolatey)</strong></summary>
-
-```powershell
-choco install temurin21jdk maven nodejs-lts -y
-npm install -g pnpm
-```
-</details>
-
-### 2. Clone and Verify
-
-```bash
-git clone <repository-url>
-cd wordle-kata
-./quality-check.sh
-```
-
-**That's it!** The script automatically:
-- Validates all prerequisites (shows install commands if missing)
-- Installs pnpm if npm exists but pnpm doesn't
-- Installs all project dependencies (frontend, e2e-tests, backend)
-- Installs security tools (gitleaks, semgrep)
-- Runs all 17 quality checks
-
-**All checks must pass before you start coding!**
-
-## Development
-
-### Start the Application
-
-```bash
-# Terminal 1: Backend (http://localhost:8080)
-cd backend && mvn -Prun
-
-# Terminal 2: Frontend (http://localhost:4200)
-cd frontend && pnpm start
-```
-
-Open `http://localhost:4200` in your browser.
-
-**Note:** Use `pnpm` for all frontend/e2e commands (not `npm`).
-
-## 📦 Prerequisites Reference
-
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Java | 21 | Backend runtime (see `.java-version`) |
-| Maven | 3.9+ | Backend build tool |
-| Node.js | 20+ | Frontend runtime (see `.nvmrc`) |
-| pnpm | latest | Frontend package manager |
-| Git | any | Version control |
+**Required Tools:**
+- **Java 21** (OpenJDK or equivalent)
+- **Maven 3.9+**
+- **Node.js 20+** and **pnpm** (install via `npm install -g pnpm`)
+- **Git** (for version control)
+- Your favorite **IDE** (IntelliJ IDEA, VS Code, Cursor, Windsurf, etc.)
 
 **Recommended Knowledge:**
 - Familiarity with TDD principles
@@ -175,11 +79,43 @@ Open `http://localhost:4200` in your browser.
 - Experience with Java/Spring Boot and TypeScript/Angular (or strong fundamentals)
 - Knowledge of how Wordle works (play a few games at [nytimes.com/games/wordle](https://www.nytimes.com/games/wordle))
 
+## Quick Start
+
+### 1. Start Backend
+```bash
+cd backend
+mvn clean install
+mvn -Prun
+```
+Backend runs on `http://localhost:8080`
+
+### 2. Start Frontend
+```bash
+cd frontend
+pnpm install
+pnpm start
+```
+Frontend runs on `http://localhost:4200`
+
+**Note:** Use `pnpm` for all frontend commands (not `npm`). The project uses pnpm for faster, more efficient dependency management.
+
+### 3. Access Application
+Open `http://localhost:4200` in your browser
+
 ## Configuration
 
 Both backend and frontend are **loosely coupled** via environment-based configuration:
-- **Backend**: See [backend/README.md](./backend/README.md#cors-configuration)
-- **Frontend**: See [frontend/README.md](./frontend/README.md#environment-configuration)
+
+### Backend Configuration
+- **Environment Variable**: `CORS_ALLOWED_ORIGINS` (default: `http://localhost:4200`)
+- **Production Example**: `export CORS_ALLOWED_ORIGINS=https://myapp.com,https://www.myapp.com`
+- **Details**: See [backend/README.md](./backend/README.md#cors-configuration)
+
+### Frontend Configuration
+- **Environment Files**: `apps/hello-world-frontend/src/environments/environment.ts` (dev) and `environment.prod.ts` (prod)
+- **Development**: Points to `http://localhost:8080/api`
+- **Production**: Uses relative URL `/api` (same domain as frontend)
+- **Details**: See [frontend/README.md](./frontend/README.md#environment-configuration)
 
 ## 🏛️ Architecture (Maintain This!)
 
@@ -188,7 +124,12 @@ Your backend follows **Hexagonal Architecture** with strict layer separation. As
 - **Keep the layers clean**: Domain → Application → Adapters
 - **Respect the boundaries**: ArchUnit tests will catch violations!
 - **Use Vavr's Either pattern**: For elegant error handling
-- **Quality tools included**: Checkstyle, SpotBugs, OWASP CVE scanning, mutation testing
+- **Test everything**: Behavior tests + ArchUnit rules
+
+**Current state:**
+- **Tech**: Java 21, Spring Boot 3.2.0, Vavr (Either pattern)
+- **Testing**: JUnit 5 + AssertJ + ArchUnit (12 architecture rules enforced)
+- **Coverage**: JaCoCo 0.8.12 - **100%** (21 tests: 9 behavior + 12 ArchUnit)
 
 ### Frontend (Modern Angular + Nx)
 Your frontend uses **Angular 21** with modern patterns and **Nx workspace**. As you build the Wordle UI:
@@ -205,7 +146,14 @@ Your frontend uses **Angular 21** with modern patterns and **Nx workspace**. As 
 
 ## 💯 Code Coverage (Keep It at 100%!)
 
-Both backend and frontend start with **100% test coverage**. Your challenge: keep it that way as you build Wordle!
+**Starting point** (Hello World implementation):
+
+| Project | Instructions | Branches | Lines | Methods/Functions | Tests |
+|---------|--------------|----------|-------|-------------------|-------|
+| **Backend** | 100% (137/137) | 100% (6/6) | 100% (25/25) | 100% (11/11) | 21 |
+| **Frontend** | 100% (50/50) | 100% (0/0) | 100% (44/44) | 100% (11/11) | 10 |
+
+**Your challenge:** Keep it at 100% as you replace Hello World with Wordle! 🎯
 
 Every new feature needs tests. Every refactoring must keep tests green. No excuses, no shortcuts—this is the kata way!
 
@@ -214,14 +162,16 @@ Every new feature needs tests. Every refactoring must keep tests green. No excus
 ### Unit & Component Tests (Run These Often!)
 
 ```bash
-# Backend - see backend/README.md for all commands
+# Backend (JUnit + ArchUnit) - with coverage report
 cd backend && mvn test
+open target/site/jacoco/index.html
 
-# Frontend - see frontend/README.md for all commands
-cd frontend && pnpm test
+# Frontend (Cypress Component Tests) - with coverage report
+cd frontend && pnpm test:coverage
+open coverage/index.html
 ```
 
-**Pro tip:** Run tests frequently! After every small change, make sure everything is still green. That's the TDD heartbeat!
+**Pro tip:** Run tests frequently! After every small change, make sure everything is still green. That's the TDD heartbeat! ❤️
 
 ### E2E Tests (Run Before Commits)
 
@@ -268,7 +218,6 @@ cd e2e-tests && pnpm cleanup
 - ✅ Pick your first story (or create your own tiny first step)
 - ✅ Write a test (RED), make it pass (GREEN), clean it up (REFACTOR)
 - ✅ Keep the app working and coverage at 100%
-- ✅ Run quality checks before every commit
 - ✅ Use AI tools to help, but understand everything you commit
 - ✅ Collaborate, learn, and have fun!
 

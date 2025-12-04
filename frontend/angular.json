@@ -55,21 +55,7 @@
               "apps/hello-world-frontend/src/**/*.html",
               "libs/**/*.ts",
               "libs/**/*.html"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "**/dist/**",
-              "**/.angular/**",
-              "**/.nx/**",
-              "**/coverage/**",
-              "**/.nyc_output/**",
-              "**/cypress/videos/**",
-              "**/cypress/screenshots/**"
-            ],
-            "maxWarnings": 0,
-            "cache": true,
-            "cacheLocation": ".eslintcache",
-            "cacheStrategy": "content"
+            ]
           }
         }
       }

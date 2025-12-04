@@ -2,10 +2,6 @@
 node_modules/
 npm-debug.log
 yarn-error.log
-.pnpm-store/
-pnpm-lock.yaml
-package-lock.json
-yarn.lock
 
 # Angular
 /dist/
@@ -38,8 +34,8 @@ Thumbs.db
 # Angular cache
 .angular/
 
-# Nx cache (entire directory)
-.nx/
+# Nx cache
+.nx/cache
+.nx/workspace-data
 
-# ESLint cache
-.eslintcache
+.angular

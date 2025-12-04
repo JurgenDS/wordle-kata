@@ -18,31 +18,19 @@ This application follows **Hexagonal Architecture** with these layers:
 - **Command Processor Pattern**: Commands define operations, processors implement them
 - **Either Pattern** (Vavr): Business errors returned as `Either<BusinessError, T>`
 - **Value Objects**: Immutable domain objects (Greeting)
-- **Factory Method Validation**: Domain objects validate in factory methods (SpotBugs compliant)
+- **Fail-Fast Validation**: Domain objects validate in constructor
 
 ## Technologies
 
-### Core
-- **Java**: 21 (LTS)
-- **Spring Boot**: 3.4.1
+- **Java**: 21
+- **Spring Boot**: 3.2.0
 - **Maven**: 3.9+
 - **Vavr**: 0.10.4 (functional programming)
-- **Lombok**: 1.18.42 (boilerplate reduction)
-- **MapStruct**: 1.6.3 (object mapping)
-
-### Testing & Coverage
+- **Lombok**: 1.18.36 (boilerplate reduction)
 - **JUnit 5**: 5.x (testing framework)
-- **AssertJ**: 3.24.2 (fluent assertions)
+- **AssertJ**: 3.x (fluent assertions)
 - **JaCoCo**: 0.8.12 (code coverage)
 - **ArchUnit**: 1.3.0 (architecture testing)
-
-### Static Analysis & Security
-- **SpotBugs**: 4.8.6.6 (bug detection)
-- **FindSecBugs**: 1.13.0 (security bug detection)
-- **OWASP Dependency Check**: 12.1.9 (CVE scanning)
-- **Checkstyle**: 10.21.4 (code style enforcement)
-- **License Maven Plugin**: 2.5.0 (dependency license compliance)
-- **PIT**: 1.18.2 (mutation testing)
 
 ## Code Coverage
 
@@ -183,149 +171,6 @@ Or on Linux:
 xdg-open target/site/jacoco/index.html
 ```
 
-## Quality Commands
-
-All plugins are installed automatically via `mvn install`.
-
-| Command | Purpose |
-|---------|---------|
-| `mvn checkstyle:check` | Check Java code style |
-| `mvn license:add-third-party` | Check dependency licenses |
-| `mvn spotbugs:check` | Find bugs and security issues |
-| `mvn dependency-check:check` | Scan for CVEs |
-| `mvn pitest:mutationCoverage` | Run mutation testing (slow) |
-
-Or run all checks at once from the project root:
-```bash
-./quality-check.sh           # Standard checks
-./quality-check.sh --mutation # Include mutation testing
-```
-
-### Using NVD_API_KEY for Faster CVE Scanning
-
-OWASP Dependency-Check can use an NVD API key to speed up CVE scanning. To use it:
-
-1. **Create a `.env` file** in the `backend/` directory:
-   ```bash
-   NVD_API_KEY=your-api-key-here
-   ```
-
-2. **Load the environment variables before running Maven:**
-
-   **On Windows (PowerShell):**
-   ```powershell
-   cd backend
-   .\mvn-with-env.ps1 install
-   .\mvn-with-env.ps1 dependency-check:check
-   ```
-
-   **On Windows (Command Prompt or double-click):**
-   ```cmd
-   cd backend
-   mvn-with-env.bat install
-   mvn-with-env.bat dependency-check:check
-   ```
-   
-   **Or simply double-click:** `mvn-with-env.bat` (then type your Maven command)
-
-   **On macOS/Linux:**
-   ```bash
-   cd backend
-   source scripts/load-env.sh
-   mvn install
-   mvn dependency-check:check
-   ```
-
-   Or in one line:
-   ```bash
-   source backend/scripts/load-env.sh && mvn install
-   ```
-
-**Note:** The `.env` file is automatically loaded when running `./quality-check.sh` or `.\quality-check.ps1` from the project root.
-
-### Installing NVD_API_KEY as Windows Environment Variable
-
-Instead of loading from `.env` file each time, you can install the API key as a persistent Windows environment variable:
-
-**Install (User-level - recommended, no admin required):**
-
-PowerShell:
-```powershell
-cd backend
-.\scripts\install-nvd-api-key.ps1
-```
-
-Command Prompt or double-click:
-```cmd
-cd backend
-scripts\install-nvd-api-key.bat
-```
-
-**Install (System-level - requires Administrator):**
-
-PowerShell (run as Administrator):
-```powershell
-cd backend
-.\scripts\install-nvd-api-key.ps1 -System
-```
-
-Command Prompt (run as Administrator):
-```cmd
-cd backend
-scripts\install-nvd-api-key.bat -System
-```
-
-**Uninstall:**
-
-PowerShell:
-```powershell
-cd backend
-.\scripts\uninstall-nvd-api-key.ps1
-# Or with -System flag if installed as system variable
-.\scripts\uninstall-nvd-api-key.ps1 -System
-```
-
-Command Prompt or double-click:
-```cmd
-cd backend
-scripts\uninstall-nvd-api-key.bat
-# Or with -System flag
-scripts\uninstall-nvd-api-key.bat -System
-```
-
-**Benefits:**
-- ✅ Available to all processes automatically (no need to load .env file)
-- ✅ Persists across terminal sessions and reboots
-- ✅ Works with any Maven command without wrapper scripts
-- ✅ Available to IDEs and other tools
-
-**Note:** After installation, restart your terminal/IDE for the variable to be available to all processes.
-
-### Clearing Dependency-Check Cache
-
-If Dependency-Check is slow or you're experiencing issues, you can clear the cache:
-
-**On Windows (PowerShell):**
-```powershell
-cd backend
-.\scripts\clear-dependency-check-cache.ps1
-```
-
-**On Windows (Command Prompt or double-click):**
-```cmd
-cd backend
-scripts\clear-dependency-check-cache.bat
-```
-
-**On macOS/Linux:**
-```bash
-# The cache is typically located at:
-# ~/.m2/repository/org/owasp/dependency-check-data
-rm -rf ~/.m2/repository/org/owasp/dependency-check-data
-```
-
-**Note:** After clearing the cache, the next run will download fresh data. With `NVD_API_KEY` set, this should be faster.
-
 ## Test Suites
 
 ### 1. Behavior Tests (9 tests)
@@ -448,9 +293,9 @@ backend/
 
 ### Domain Layer
 - `domain/model/Greeting.java`: Immutable value object representing a greeting
-  - Validates message is not blank (in factory method)
+  - Validates message is not blank
+  - Fail-fast principle
   - Factory method pattern (`Greeting.of()`)
-  - SpotBugs compliant (no constructor exceptions)
 
 ### Application Layer
 - `application/ports/incoming/GetGreetingCommand.java`: Command to get greeting
@@ -622,7 +467,7 @@ This project follows:
 - Exceptions only for unexpected technical errors
 
 **Validation:**
-- Fail-fast in factory methods (SpotBugs compliant)
+- Fail-fast in constructors
 - Domain objects always valid after construction
 - Validate at boundaries (commands, API)
 

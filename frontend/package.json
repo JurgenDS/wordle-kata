@@ -2,26 +2,25 @@
   "name": "hello-world-frontend",
   "version": "1.0.0",
   "description": "Hello World Angular Frontend",
-  "license": "MIT",
   "scripts": {
     "start": "nx serve hello-world-frontend",
     "build": "nx build hello-world-frontend",
     "test": "cypress run --component",
     "test:open": "cypress open --component",
     "test:coverage": "cypress run --component && nyc report --reporter=text-summary",
-    "lint": "eslint \"apps/hello-world-frontend/src/**/*.ts\" \"apps/hello-world-frontend/src/**/*.html\" \"libs/**/*.ts\" \"libs/**/*.html\" --cache --cache-location .eslintcache",
+    "lint": "nx lint hello-world-frontend",
     "format": "prettier --write \"**/*.{ts,html,scss,css,json}\" --ignore-path .gitignore",
     "format:check": "prettier --check \"**/*.{ts,html,scss,css,json}\" --ignore-path .gitignore"
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^21.0.3",
-    "@angular/common": "^21.0.3",
-    "@angular/compiler": "^21.0.3",
-    "@angular/core": "^21.0.3",
-    "@angular/forms": "^21.0.3",
-    "@angular/platform-browser": "^21.0.3",
-    "@angular/platform-browser-dynamic": "^21.0.3",
+    "@angular/animations": "^21.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/platform-browser-dynamic": "^21.0.0",
     "@standard-schema/spec": "^1.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^20.3.0",
@@ -30,20 +29,19 @@
     "zone.js": "~0.16.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^21.0.2",
-    "@angular-devkit/core": "^21.0.2",
-    "@angular-devkit/schematics": "^21.0.2",
-    "@angular/cli": "^21.0.2",
-    "@angular/compiler-cli": "^21.0.3",
+    "@angular-devkit/build-angular": "^21.0.0",
+    "@angular-devkit/core": "^21.0.0",
+    "@angular-devkit/schematics": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
     "@cypress/code-coverage": "^3.14.7",
     "@cypress/schematic": "^4.1.4",
     "@cypress/webpack-preprocessor": "^7.0.2",
-    "@eslint/js": "^9.39.1",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@nx/angular": "^22.1.1",
     "@nx/jest": "22.1.1",
     "@nx/js": "22.1.1",
-    "@schematics/angular": "^21.0.2",
+    "@schematics/angular": "^21.0.0",
     "@swc-node/register": "~1.11.1",
     "@swc/core": "~1.15.3",
     "@swc/helpers": "~0.5.11",
@@ -59,7 +57,6 @@
     "jest-environment-jsdom": "^30.2.0",
     "jest-preset-angular": "~15.0.3",
     "jest-util": "^30.2.0",
-    "license-checker": "^25.0.1",
     "nx": "^22.1.1",
     "nyc": "^17.1.0",
     "prettier": "^3.6.2",
@@ -72,8 +69,7 @@
   },
   "pnpm": {
     "overrides": {
-      "js-yaml": ">=4.1.1",
-      "node-forge": ">=1.3.2"
+      "js-yaml": ">=4.1.1"
     }
   }
 }
