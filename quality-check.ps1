@@ -197,8 +197,25 @@ function Test-Prerequisites {
     # Check Java
     Write-Step "Checking Java..."
     if (Test-Command "java") {
-        $javaVersion = & java -version 2>&1 | Select-Object -First 1
-        Write-Success "Java found: $javaVersion"
+        # java -version outputs to stderr, so we need to capture it properly
+        # In PowerShell, stderr redirection with 2>&1 creates ErrorRecord objects
+        # Convert all output to strings and get the first line
+        try {
+            $ErrorActionPreference = "SilentlyContinue"
+            $javaVersionOutput = & java -version 2>&1 | ForEach-Object { $_.ToString() }
+            if ($javaVersionOutput) {
+                $javaVersion = if ($javaVersionOutput -is [System.Array]) {
+                    $javaVersionOutput[0]
+                } else {
+                    $javaVersionOutput
+                }
+                Write-Success "Java found: $javaVersion"
+            } else {
+                Write-Success "Java found (version check unavailable)"
+            }
+        } catch {
+            Write-Success "Java found (version check unavailable)"
+        }
     } else {
         Write-Failure "Java not found"
         $missingPrereqs += "java"
