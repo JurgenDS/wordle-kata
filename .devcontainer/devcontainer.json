@@ -4,21 +4,8 @@
   "service": "devcontainer",
   "workspaceFolder": "/workspace",
 
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {
-      "installZsh": true,
-      "configureZshAsDefaultShell": true,
-      "installOhMyZsh": true,
-      "upgradePackages": true
-    },
-    "ghcr.io/devcontainers/features/git:1": {
-      "version": "latest",
-      "ppa": false
-    },
-    "ghcr.io/devcontainers/features/github-cli:1": {
-      "version": "latest"
-    }
-  },
+  // All tools (zsh, git, gh) are pre-installed in the Docker image
+  // No features needed - this ensures the pre-built image is used directly
 
   "customizations": {
     "vscode": {
