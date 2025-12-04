@@ -17,6 +17,8 @@ echo ""
 
 # Load .env file if it exists (for NVD_API_KEY)
 if [ -f "/workspace/backend/.env" ]; then
+    # Convert CRLF to LF (Windows line endings cause issues)
+    sed -i 's/\r$//' /workspace/backend/.env 2>/dev/null || true
     set -a
     source /workspace/backend/.env
     set +a
