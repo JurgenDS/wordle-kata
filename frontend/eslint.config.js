@@ -35,9 +35,12 @@ module.exports = tseslint.config(
       // Re-enable if you need style checks: ...tseslint.configs.stylistic,
       ...angular.configs.tsRecommended,
     ],
-    // Inline template processor - can be slow, but necessary for Angular template linting
-    // This processes Angular inline templates (template strings in components)
-    processor: angular.processInlineTemplates,
+    // Inline template processor - REQUIRED only if you have components with inline templates
+    // PERFORMANCE: This is the main bottleneck - it compiles Angular templates (30-60s on first run)
+    // SOLUTION: Use templateUrl instead of inline template strings for better performance
+    // If you have NO inline templates, you can disable this: processor: undefined,
+    // Currently disabled because all templates use templateUrl (see app.component.ts)
+    // processor: angular.processInlineTemplates,
     plugins: {
       "custom": customRules,
     },

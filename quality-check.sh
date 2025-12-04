@@ -686,18 +686,27 @@ main() {
 
     # Lint check
     print_step "Running: ESLint"
-    # Note: First run may be slow (building cache), subsequent runs use cache
-    # The inline template processor processes Angular templates which can be slow
+    # Performance note: Angular ESLint uses inline template processor which compiles templates
+    # This is slow on first run but uses cache on subsequent runs
+    # Only 21 files to lint, but template compilation adds overhead
+    START_LINT=$(date +%s)
     if pnpm lint > "$FRONTEND_LINT_LOG" 2>&1; then
-        print_success "ESLint passed"
+        END_LINT=$(date +%s)
+        LINT_DURATION=$((END_LINT - START_LINT))
+        print_success "ESLint passed (${LINT_DURATION}s)"
         FRONTEND_LINT_RESULT="PASS"
         # Check if cache was used
         if grep -q "Nx read the output from the cache" "$FRONTEND_LINT_LOG" 2>/dev/null; then
             print_detail "Used Nx cache (very fast)"
         elif [ -f "$PROJECT_ROOT/frontend/.eslintcache" ]; then
-            print_detail "ESLint cache exists (subsequent runs will be faster)"
+            if [ "$LINT_DURATION" -gt 10 ]; then
+                print_warning "ESLint took ${LINT_DURATION}s - template compilation is slow"
+                print_detail "This is normal for first run or when templates change"
+            else
+                print_detail "ESLint cache working (${LINT_DURATION}s)"
+            fi
         else
-            print_detail "First run - cache will be built (this may take longer)"
+            print_detail "First run - building cache (this may take 30-60s)"
         fi
     else
         print_failure "ESLint failed"
