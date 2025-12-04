@@ -29,8 +29,8 @@ Your Wordle implementation **must** follow the complete specification in:
 - **[docs/wordle-prd.md](./docs/wordle-prd.md)** - Product Requirements Document with detailed game rules, functional requirements, and acceptance criteria
 
 **Scope for this kata:**
-- ✅ Milestones 1-5 (Stories 001-022) covering the full core Wordle experience
-- 🎁 Post-milestone enhancements (advanced backlog) are optional for ambitious teams
+- ✅ Milestones 1-5 covering the full core Wordle experience would be the aim for this session
+- 🎁 Post-milestone enhancements (advanced backlog) are optional for ambitious teams which have time left
 
 ## 🗺️ Suggested Implementation Path
 
@@ -56,7 +56,7 @@ Each story is designed for:
 **Duration:** Half-day to multiple days (go at your own pace, as far as you can!)
 
 **🤖 AI Tools Welcome!**
-Use AI assistants (GitHub Copilot, JetBrains AI, Claude Code, ChatGPT, etc.) as much as you want! But remember:
+Use AI assistants (GitHub Copilot, JetBrains AI, Claude Code, ChatGPT, Warp, etc.) as much as you want! But remember:
 - **You** are responsible for code quality
 - **You** must understand what the AI generates
 - **You** must maintain tests, coverage, and architecture
@@ -70,6 +70,7 @@ Think of AI as an extra mob member with infinite knowledge but no judgement—us
 - **Java 21** (OpenJDK or equivalent)
 - **Maven 3.9+**
 - **Node.js 20+** and **pnpm** (install via `npm install -g pnpm`)
+- **Cypres** (install via `pnpm cypress install`)
 - **Git** (for version control)
 - Your favorite **IDE** (IntelliJ IDEA, VS Code, Cursor, Windsurf, etc.)
 
@@ -128,8 +129,8 @@ Your backend follows **Hexagonal Architecture** with strict layer separation. As
 
 **Current state:**
 - **Tech**: Java 21, Spring Boot 3.2.0, Vavr (Either pattern)
-- **Testing**: JUnit 5 + AssertJ + ArchUnit (12 architecture rules enforced)
-- **Coverage**: JaCoCo 0.8.12 - **100%** (21 tests: 9 behavior + 12 ArchUnit)
+- **Testing**: JUnit 5 + AssertJ + ArchUnit
+- **Coverage**: JaCoCo 0.8.12 - **100%**
 
 ### Frontend (Modern Angular + Nx)
 Your frontend uses **Angular 21** with modern patterns and **Nx workspace**. As you build the Wordle UI:
@@ -141,8 +142,8 @@ Your frontend uses **Angular 21** with modern patterns and **Nx workspace**. As 
 
 **Current state:**
 - **Tech**: Angular 21, TypeScript 5.9.3, Nx 22.1.1, PrimeNG 20.3.0, Cypress 15.7.0
-- **Code Quality**: ESLint 9.39.1 + Prettier 3.6.2 (auto-enforced)
-- **Coverage**: Custom Istanbul instrumentation - **100%** (10 Cypress component tests)
+- **Code Quality**: ESLint 9.39.1 + Prettier 3.6.2
+- **Coverage**: Custom Istanbul instrumentation - **100%**
 
 ## 💯 Code Coverage (Keep It at 100%!)
 
@@ -167,7 +168,7 @@ cd backend && mvn test
 open target/site/jacoco/index.html
 
 # Frontend (Cypress Component Tests) - with coverage report
-cd frontend && pnpm test:coverage
+cd frontend && pnpm cypress install && pnpm test:coverage
 open coverage/index.html
 ```
 
@@ -188,9 +189,6 @@ cd e2e-tests && pnpm test:e2e:headed
 
 # Interactive UI mode
 cd e2e-tests && pnpm test:e2e:ui
-
-# Cleanup orphaned processes (if tests crash)
-cd e2e-tests && pnpm cleanup
 ```
 
 ## 📚 Documentation

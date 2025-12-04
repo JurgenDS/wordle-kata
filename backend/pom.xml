@@ -29,6 +29,10 @@
         <assertj.version>3.24.2</assertj.version>
         <spotbugs.version>4.9.3.0</spotbugs.version>
         <findsecbugs.version>1.13.0</findsecbugs.version>
+        <pitest.version>1.17.4</pitest.version>
+        <pitest-junit5.version>1.2.1</pitest-junit5.version>
+        <!-- Default empty value for JaCoCo argLine (set by JaCoCo plugin when running tests) -->
+        <surefire.jacoco.args></surefire.jacoco.args>
     </properties>
 
     <dependencies>
@@ -260,6 +264,49 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- PITest for mutation testing (run manually with: mvn pitest:mutationCoverage) -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>${pitest.version}</version>
+                <configuration>
+                    <targetClasses>
+                        <param>com.example.hello.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>com.example.hello.*</param>
+                    </targetTests>
+                    <excludedClasses>
+                        <param>com.example.hello.HelloWorldApplication</param>
+                        <param>com.example.hello.config.*</param>
+                        <param>com.example.hello.architecture.*</param>
+                    </excludedClasses>
+                    <excludedTestClasses>
+                        <param>com.example.hello.architecture.*</param>
+                    </excludedTestClasses>
+                    <mutators>
+                        <mutator>DEFAULTS</mutator>
+                    </mutators>
+                    <outputFormats>
+                        <outputFormat>HTML</outputFormat>
+                        <outputFormat>XML</outputFormat>
+                    </outputFormats>
+                    <timestampedReports>false</timestampedReports>
+                    <!-- JVM arguments for Java 21 compatibility -->
+                    <jvmArgs>
+                        <jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>
+                        <jvmArg>--add-opens=java.base/java.util=ALL-UNNAMED</jvmArg>
+                        <jvmArg>--add-opens=java.base/java.lang.reflect=ALL-UNNAMED</jvmArg>
+                    </jvmArgs>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>${pitest-junit5.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
