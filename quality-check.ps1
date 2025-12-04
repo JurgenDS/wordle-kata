@@ -154,6 +154,27 @@ function Test-Command {
     return $?
 }
 
+# Load environment variables from .env file
+function Load-EnvFile {
+    param([string]$EnvFilePath)
+
+    if (Test-Path $EnvFilePath) {
+        Get-Content $EnvFilePath | ForEach-Object {
+            # Skip comments and empty lines
+            if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
+                $key = $matches[1].Trim()
+                $value = $matches[2].Trim()
+                # Set in both current session ($env:) and process environment
+                # This ensures Maven child processes can see it
+                Set-Item -Path "env:$key" -Value $value
+                [System.Environment]::SetEnvironmentVariable($key, $value, [System.EnvironmentVariableTarget]::Process)
+            }
+        }
+        return $true
+    }
+    return $false
+}
+
 # Run a command and capture output
 function Invoke-Check {
     param(
@@ -403,6 +424,12 @@ function Install-Dependencies {
     if (-not (Test-Path $backendTarget)) {
         Write-Warning "Backend not built yet"
         Write-Step "Building backend (mvn install)..."
+        # Load .env file before mvn install (for NVD_API_KEY)
+        # This ensures OWASP Dependency-Check uses the API key if triggered during install
+        $envFile = Join-Path $PROJECT_ROOT "backend\.env"
+        if (Load-EnvFile -EnvFilePath $envFile) {
+            Write-Detail "Loaded environment variables from backend\.env (for OWASP Dependency-Check)"
+        }
         Push-Location (Join-Path $PROJECT_ROOT "backend")
         try {
             & mvn install -DskipTests -q 2>&1 | Out-Null
@@ -572,6 +599,21 @@ function Main {
     # ===================================================================
     Write-Header "BACKEND CHECKS (Java/Spring Boot)"
 
+    # Load .env file before any Maven commands (for NVD_API_KEY)
+    # This ensures OWASP Dependency-Check uses the API key even if triggered by mvn verify
+    $envFile = Join-Path $PROJECT_ROOT "backend\.env"
+    if (Load-EnvFile -EnvFilePath $envFile) {
+        Write-Detail "Loaded environment variables from backend\.env (for OWASP Dependency-Check)"
+        # Verify NVD_API_KEY was loaded
+        if ($env:NVD_API_KEY) {
+            Write-Detail "NVD_API_KEY is set (will speed up CVE scanning)"
+        } else {
+            Write-Warning "NVD_API_KEY not found in .env file - CVE scanning may be slower"
+        }
+    } else {
+        Write-Warning "backend\.env file not found - CVE scanning may be slower without NVD_API_KEY"
+    }
+
     Write-Step "Running: Maven tests (JUnit + ArchUnit + JaCoCo)"
     Push-Location (Join-Path $PROJECT_ROOT "backend")
 
@@ -636,30 +678,8 @@ function Main {
 
     # OWASP Dependency-Check
     Write-Step "Running: OWASP Dependency-Check (CVE scanning)"
-    # Load .env if exists (for NVD_API_KEY)
-    $envFile = Join-Path $PROJECT_ROOT "backend\.env"
-    if (Test-Path $envFile) {
-        Get-Content $envFile | ForEach-Object {
-            # Skip comments and empty lines
-            if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
-                $key = $matches[1].Trim()
-                $value = $matches[2].Trim()
-                # Set in both current session ($env:) and process environment
-                # This ensures Maven child processes can see it
-                Set-Item -Path "env:$key" -Value $value
-                [System.Environment]::SetEnvironmentVariable($key, $value, [System.EnvironmentVariableTarget]::Process)
-            }
-        }
-        Write-Detail "Loaded environment variables from backend\.env"
-        # Verify NVD_API_KEY was loaded
-        if ($env:NVD_API_KEY) {
-            Write-Detail "NVD_API_KEY is set (will speed up CVE scanning)"
-        } else {
-            Write-Warning "NVD_API_KEY not found in .env file - CVE scanning may be slower"
-        }
-    } else {
-        Write-Warning "backend\.env file not found - CVE scanning may be slower without NVD_API_KEY"
-    }
+    # Note: .env file is already loaded before backend checks section
+    # This ensures the API key is available for dependency-check
     try {
         $output = & mvn dependency-check:check 2>&1 | Out-String
         $output | Out-File -FilePath $script:LogFiles.BackendDepcheck -Encoding utf8
