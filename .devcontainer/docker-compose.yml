@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  devcontainer:
+    # Use pre-built image from GitLab Container Registry
+    # Falls back to local build if image doesn't exist
+    image: registry.gitlab.com/simplificationofficers/wordle-kata/devcontainer:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+      # Named volumes for caches (faster than bind mounts)
+      - maven-cache:/home/vscode/.m2
+      - pnpm-cache:/home/vscode/.local/share/pnpm
+      - playwright-cache:/home/vscode/.cache/ms-playwright
+    environment:
+      - TZ=UTC
+      - JAVA_HOME=/usr/lib/jvm/temurin-21-jdk-amd64
+      - MAVEN_OPTS=-Xmx1024m -XX:+UseG1GC
+      - NODE_OPTIONS=--max-old-space-size=4096
+      # Pass through NVD API key if set on host
+      - NVD_API_KEY=${NVD_API_KEY:-}
+    ports:
+      - "4200:4200"   # Angular dev server
+      - "8080:8080"   # Spring Boot
+      - "9323:9323"   # Playwright report server
+      - "35729:35729" # LiveReload
+    # Keep container running
+    command: sleep infinity
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+volumes:
+  maven-cache:
+    name: wordle-kata-maven-cache
+  pnpm-cache:
+    name: wordle-kata-pnpm-cache
+  playwright-cache:
+    name: wordle-kata-playwright-cache

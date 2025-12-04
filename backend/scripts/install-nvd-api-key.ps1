@@ -36,7 +36,7 @@ if ($ApiKey) {
     # Try to read from .env file
     $BACKEND_DIR = Split-Path -Parent $PSScriptRoot
     $ENV_FILE = Join-Path $BACKEND_DIR ".env"
-    
+
     if (Test-Path $ENV_FILE) {
         Write-Host "Reading from .env file: $ENV_FILE" -ForegroundColor Cyan
         Get-Content $ENV_FILE | ForEach-Object {
@@ -44,7 +44,7 @@ if ($ApiKey) {
                 $apiKeyValue = $matches[1].Trim()
             }
         }
-        
+
         if ($apiKeyValue) {
             Write-Host "✓ Found NVD_API_KEY in .env file" -ForegroundColor Green
         } else {
@@ -53,14 +53,14 @@ if ($ApiKey) {
     } else {
         Write-Host "⚠ .env file not found at: $ENV_FILE" -ForegroundColor Yellow
     }
-    
+
     # If still not found, prompt user
     if (-not $apiKeyValue) {
         Write-Host ""
         Write-Host "Enter your NVD API key:" -ForegroundColor Cyan
         Write-Host "  (Get a free key at: https://nvd.nist.gov/developers/request-an-api-key)" -ForegroundColor Gray
         $apiKeyValue = Read-Host "NVD_API_KEY"
-        
+
         if ([string]::IsNullOrWhiteSpace($apiKeyValue)) {
             Write-Host "Error: API key cannot be empty" -ForegroundColor Red
             exit 1
@@ -85,7 +85,7 @@ if ($confirmation -ne 'y' -and $confirmation -ne 'Y') {
 # Set the environment variable
 try {
     Write-Host "Setting NVD_API_KEY..." -ForegroundColor Cyan
-    
+
     if ($System) {
         # System-level (requires admin)
         [System.Environment]::SetEnvironmentVariable("NVD_API_KEY", $apiKeyValue, [System.EnvironmentVariableTarget]::Machine)
@@ -97,14 +97,14 @@ try {
         Write-Host "✓ Set as User environment variable" -ForegroundColor Green
         Write-Host "  Note: You may need to restart your terminal/IDE for changes to take effect" -ForegroundColor Yellow
     }
-    
+
     # Also set in current session so it's immediately available
     $env:NVD_API_KEY = $apiKeyValue
     Write-Host "✓ Set in current PowerShell session" -ForegroundColor Green
-    
+
     Write-Host ""
     Write-Host "Verifying installation..." -ForegroundColor Cyan
-    
+
     # Verify it was set correctly
     $verifyKey = [System.Environment]::GetEnvironmentVariable("NVD_API_KEY", $(if ($System) { "Machine" } else { "User" }))
     if ($verifyKey -eq $apiKeyValue) {
@@ -120,7 +120,7 @@ try {
         Write-Host "⚠ Verification failed - key may not be set correctly" -ForegroundColor Yellow
         Write-Host "  Try restarting your terminal and running this script again" -ForegroundColor Yellow
     }
-    
+
 } catch {
     Write-Host "✗ Error setting environment variable: $_" -ForegroundColor Red
     Write-Host ""

@@ -1,0 +1,133 @@
+{
+  "name": "Wordle Kata Development",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": false
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        "java.configuration.updateBuildConfiguration": "automatic",
+        "java.server.launchMode": "Standard",
+        "java.compile.nullAnalysis.mode": "automatic",
+        "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "[java]": {
+          "editor.defaultFormatter": "redhat.java"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[html]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[scss]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/target": true,
+          "**/.angular": true
+        },
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/target": true,
+          "**/.angular": true,
+          "**/dist": true,
+          "**/coverage": true
+        }
+      },
+      "extensions": [
+        "redhat.java",
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-java-debug",
+        "vscjava.vscode-java-test",
+        "vscjava.vscode-maven",
+        "vscjava.vscode-spring-boot-dashboard",
+        "vmware.vscode-spring-boot",
+        "Pivotal.vscode-boot-dev-pack",
+        "angular.ng-template",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-playwright.playwright",
+        "orta.vscode-jest",
+        "ryanluker.vscode-coverage-gutters",
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "sonarsource.sonarlint-vscode",
+        "streetsidesoftware.code-spell-checker",
+        "EditorConfig.EditorConfig",
+        "ms-azuretools.vscode-docker",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
+      ]
+    }
+  },
+
+  "forwardPorts": [4200, 8080, 9323],
+  "portsAttributes": {
+    "4200": {
+      "label": "Angular Frontend",
+      "onAutoForward": "notify"
+    },
+    "8080": {
+      "label": "Spring Boot Backend",
+      "onAutoForward": "notify"
+    },
+    "9323": {
+      "label": "Playwright Report",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
+
+  "remoteUser": "vscode",
+
+  "containerEnv": {
+    "TZ": "UTC",
+    "JAVA_HOME": "/usr/lib/jvm/java-21-openjdk-amd64",
+    "MAVEN_OPTS": "-Xmx1024m"
+  },
+
+  "mounts": [
+    "source=${localWorkspaceFolderBasename}-maven-cache,target=/home/vscode/.m2,type=volume",
+    "source=${localWorkspaceFolderBasename}-pnpm-cache,target=/home/vscode/.local/share/pnpm,type=volume",
+    "source=${localWorkspaceFolderBasename}-node-modules-frontend,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume",
+    "source=${localWorkspaceFolderBasename}-node-modules-e2e,target=${containerWorkspaceFolder}/e2e-tests/node_modules,type=volume"
+  ],
+
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  }
+}
