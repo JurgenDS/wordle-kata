@@ -201,6 +201,46 @@ Or run all checks at once from the project root:
 ./quality-check.sh --mutation # Include mutation testing
 ```
 
+### Using NVD_API_KEY for Faster CVE Scanning
+
+OWASP Dependency-Check can use an NVD API key to speed up CVE scanning. To use it:
+
+1. **Create a `.env` file** in the `backend/` directory:
+   ```bash
+   NVD_API_KEY=your-api-key-here
+   ```
+
+2. **Load the environment variables before running Maven:**
+
+   **On Windows (PowerShell):**
+   ```powershell
+   cd backend
+   .\mvn-with-env.ps1 install
+   .\mvn-with-env.ps1 dependency-check:check
+   ```
+
+   **On Windows (Command Prompt):**
+   ```cmd
+   cd backend
+   mvn-with-env.bat install
+   mvn-with-env.bat dependency-check:check
+   ```
+
+   **On macOS/Linux:**
+   ```bash
+   cd backend
+   source scripts/load-env.sh
+   mvn install
+   mvn dependency-check:check
+   ```
+
+   Or in one line:
+   ```bash
+   source backend/scripts/load-env.sh && mvn install
+   ```
+
+**Note:** The `.env` file is automatically loaded when running `./quality-check.sh` or `.\quality-check.ps1` from the project root.
+
 ## Test Suites
 
 ### 1. Behavior Tests (9 tests)
