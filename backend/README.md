@@ -31,6 +31,7 @@ This application follows **Hexagonal Architecture** with these layers:
 - **AssertJ**: 3.x (fluent assertions)
 - **JaCoCo**: 0.8.12 (code coverage)
 - **ArchUnit**: 1.3.0 (architecture testing)
+- **SpotBugs**: 4.9.3.0 + FindSecBugs (static analysis & security scanning)
 
 ## Code Coverage
 
@@ -51,7 +52,7 @@ This application follows **Hexagonal Architecture** with these layers:
 
 ## Prerequisites
 
-- Java 21 or higher
+- Java 21 (required for SpotBugs; Java 25 not yet supported)
 - Maven 3.6+
 
 ## Setup
@@ -419,6 +420,11 @@ This project follows:
 - **Framework independence**: Domain layer is pure Java
 - **Either pattern**: Type-safe error handling (no exceptions for business errors)
 - **Enforced by ArchUnit**: 12 architecture rules validate structure
+
+### Static Analysis & Security
+- **SpotBugs**: Bug detection with max effort
+- **FindSecBugs**: Security vulnerability scanning
+- Run with `mvn verify`
 
 ### Testing Standards
 - **100% code coverage** on business logic

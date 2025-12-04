@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude Spring Boot main application class -->
+    <Match>
+        <Class name="com.example.hello.HelloWorldApplication"/>
+    </Match>
+
+    <!-- Exclude generated code (MapStruct mappers) -->
+    <Match>
+        <Package name="~com\.example\.hello\..*"/>
+        <Class name="~.*MapperImpl"/>
+    </Match>
+
+    <!-- Exclude test classes -->
+    <Match>
+        <Source name="~.*Test\.java"/>
+    </Match>
+    <Match>
+        <Source name="~.*IT\.java"/>
+    </Match>
+
+    <!-- Exclude SPRING_ENDPOINT - Controllers are intentional -->
+    <Match>
+        <Bug pattern="SPRING_ENDPOINT"/>
+    </Match>
+
+    <!-- Exclude CT_CONSTRUCTOR_THROW for domain model value objects -->
+    <!-- Throwing in constructors is valid for domain validation -->
+    <Match>
+        <Package name="com.example.hello.domain.model"/>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+</FindBugsFilter>
