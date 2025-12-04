@@ -117,6 +117,15 @@ npm install -g pnpm
 ```
 </details>
 
+<details>
+<summary><strong>Windows (Chocolatey)</strong></summary>
+
+```powershell
+choco install temurin21jdk maven nodejs-lts -y
+npm install -g pnpm
+```
+</details>
+
 ### 2. Clone and Verify
 
 ```bash
