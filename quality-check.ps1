@@ -107,9 +107,20 @@ function Test-Command {
 
 function Get-JavaVersion {
     if (Test-Command "java") {
-        $output = & java -version 2>&1 | Select-Object -First 1
-        if ($output -match '"(\d+)') {
-            return [int]$Matches[1]
+        # Java outputs version info to stderr, so we need to suppress errors
+        # Temporarily change error action to continue (not stop) for this command
+        $oldErrorAction = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try {
+            $output = & java -version 2>&1 | Select-Object -First 1
+            if ($output -match '"(\d+)') {
+                $ErrorActionPreference = $oldErrorAction
+                return [int]$Matches[1]
+            }
+        } catch {
+            # Ignore errors from java.exe -version (it outputs to stderr which PowerShell treats as error)
+        } finally {
+            $ErrorActionPreference = $oldErrorAction
         }
     }
     return 0
@@ -118,9 +129,20 @@ function Get-JavaVersion {
 function Get-Java21Home {
     # 1. Check if JAVA_HOME is already set to Java 21
     if ($env:JAVA_HOME -and (Test-Path "$env:JAVA_HOME\bin\java.exe")) {
-        $output = & "$env:JAVA_HOME\bin\java.exe" -version 2>&1 | Select-Object -First 1
-        if ($output -match '"21\.') {
-            return $env:JAVA_HOME
+        # Java outputs version info to stderr, so we need to suppress errors
+        # Temporarily change error action to continue (not stop) for this command
+        $oldErrorAction = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try {
+            $output = & "$env:JAVA_HOME\bin\java.exe" -version 2>&1 | Select-Object -First 1
+            if ($output -match '"21\.') {
+                $ErrorActionPreference = $oldErrorAction
+                return $env:JAVA_HOME
+            }
+        } catch {
+            # Ignore errors from java.exe -version (it outputs to stderr which PowerShell treats as error)
+        } finally {
+            $ErrorActionPreference = $oldErrorAction
         }
     }
 
@@ -174,9 +196,21 @@ Write-Step "Checking Java..."
 $Java21Home = Get-Java21Home
 
 if ($Java21Home) {
-    $output = & "$Java21Home\bin\java.exe" -version 2>&1 | Select-Object -First 1
-    Write-Success "Java 21 found at $Java21Home"
-    $env:JAVA_HOME = $Java21Home
+    # Java outputs version info to stderr, so we need to suppress errors
+    # Temporarily change error action to continue (not stop) for this command
+    $oldErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $output = & "$Java21Home\bin\java.exe" -version 2>&1 | Select-Object -First 1
+        Write-Success "Java 21 found at $Java21Home"
+        $env:JAVA_HOME = $Java21Home
+    } catch {
+        # Ignore errors from java.exe -version (it outputs to stderr which PowerShell treats as error)
+        Write-Success "Java 21 found at $Java21Home"
+        $env:JAVA_HOME = $Java21Home
+    } finally {
+        $ErrorActionPreference = $oldErrorAction
+    }
 } elseif (Test-Command "java") {
     $JavaVer = Get-JavaVersion
     if ($JavaVer -ge 21) {
