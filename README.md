@@ -182,14 +182,14 @@ This runs: prerequisites check, file size validation, backend tests + coverage +
 
 ### Unit & Component Tests (Run These Often!)
 
-```bash
+```ps
 # Backend (JUnit + ArchUnit) - with coverage report
 cd backend && mvn test
-open target/site/jacoco/index.html
+start target/site/jacoco/index.html
 
 # Frontend (Cypress Component Tests) - with coverage report
 cd frontend && pnpm cypress install && pnpm test:coverage
-open coverage/index.html
+start coverage/index.html
 ```
 
 **Pro tip:** Run tests frequently! After every small change, make sure everything is still green. That's the TDD heartbeat! ❤️
