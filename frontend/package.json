@@ -13,6 +13,10 @@
     "format:check": "prettier --check \"**/*.{ts,html,scss,css,json}\" --ignore-path .gitignore"
   },
   "private": true,
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "dependencies": {
     "@angular/animations": "^21.0.0",
     "@angular/common": "^21.0.0",
@@ -69,8 +73,7 @@
   },
   "pnpm": {
     "overrides": {
-      "js-yaml": ">=4.1.1",
-      "vite": "5.4.21"
+      "js-yaml": ">=4.1.1"
     }
   }
 }
