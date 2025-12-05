@@ -235,8 +235,17 @@ if ($Java21Home) {
 # Check Maven
 Write-Step "Checking Maven..."
 if (Test-Command "mvn") {
-    $MvnVer = (& mvn -version 2>&1 | Select-Object -First 1) -replace '.*?(\d+\.\d+\.\d+).*', '$1'
-    Write-Success "Maven $MvnVer found"
+    # Maven outputs version info to stderr, so we need to suppress errors
+    $oldErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $MvnVer = (& mvn -version 2>&1 | Select-Object -First 1) -replace '.*?(\d+\.\d+\.\d+).*', '$1'
+        Write-Success "Maven $MvnVer found"
+    } catch {
+        Write-Success "Maven found"
+    } finally {
+        $ErrorActionPreference = $oldErrorAction
+    }
 } else {
     Write-Error2 "Maven not found"
     Write-Info "Install from: https://maven.apache.org/download.cgi"
@@ -341,20 +350,47 @@ try {
 
     # Compile
     Write-Step "Compiling backend..."
-    $compileOutput = & mvn compile -q 2>&1
-    if ($LASTEXITCODE -eq 0) {
-        $Results.BackendCompile = "passed"
-        Write-Success "Backend compiled successfully"
-    } else {
-        $Results.BackendCompile = "failed"
-        Write-Error2 "Backend compilation failed"
-        Write-Host $compileOutput
+    # Maven writes warnings to stderr, so we need to suppress PowerShell errors
+    # but still check the actual exit code
+    $oldErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $compileOutput = & mvn compile -q 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            $Results.BackendCompile = "passed"
+            Write-Success "Backend compiled successfully"
+        } else {
+            $Results.BackendCompile = "failed"
+            Write-Error2 "Backend compilation failed"
+            Write-Host $compileOutput
+        }
+    } catch {
+        # If compilation actually failed, check exit code
+        if ($LASTEXITCODE -ne 0) {
+            $Results.BackendCompile = "failed"
+            Write-Error2 "Backend compilation failed"
+            Write-Host $compileOutput
+        }
+    } finally {
+        $ErrorActionPreference = $oldErrorAction
     }
 
     # Tests
     if ($Results.BackendCompile -eq "passed") {
         Write-Step "Running backend tests..."
-        $testOutput = & mvn test 2>&1 | Out-String
+        # Maven writes warnings to stderr (e.g., Mockito warnings), so we need to suppress PowerShell errors
+        # but still check the actual build result in the output
+        $testOutput = ""
+        $oldErrorAction = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try {
+            $testOutput = & mvn test 2>&1 | Out-String
+        } catch {
+            # Ignore PowerShell errors from stderr warnings, we'll check the output instead
+            # Output should still be captured via 2>&1 redirection
+        } finally {
+            $ErrorActionPreference = $oldErrorAction
+        }
 
         if ($testOutput -match "BUILD SUCCESS") {
             $Results.BackendTests = "passed"
@@ -386,7 +422,19 @@ try {
     # SpotBugs (verify phase)
     if ($Results.BackendTests -eq "passed") {
         Write-Step "Running backend verification (JaCoCo + SpotBugs)..."
-        $verifyOutput = & mvn verify -DskipTests 2>&1 | Out-String
+        # Maven writes warnings to stderr, so we need to suppress PowerShell errors
+        # but still check the actual build result in the output
+        $verifyOutput = ""
+        $oldErrorAction = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try {
+            $verifyOutput = & mvn verify -DskipTests 2>&1 | Out-String
+        } catch {
+            # Ignore PowerShell errors from stderr warnings, we'll check the output instead
+            # Output should still be captured via 2>&1 redirection
+        } finally {
+            $ErrorActionPreference = $oldErrorAction
+        }
 
         if ($verifyOutput -match "BUILD SUCCESS") {
             $Results.BackendSpotBugs = "passed"
@@ -407,7 +455,19 @@ try {
         Write-Step "Running mutation testing (this may take 2-5 minutes)..."
         Write-Info "PITest is generating mutants and running tests against them..."
 
-        $mutationOutput = & mvn pitest:mutationCoverage 2>&1 | Out-String
+        # Maven writes warnings to stderr, so we need to suppress PowerShell errors
+        # but still check the actual build result in the output
+        $mutationOutput = ""
+        $oldErrorAction = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        try {
+            $mutationOutput = & mvn pitest:mutationCoverage 2>&1 | Out-String
+        } catch {
+            # Ignore PowerShell errors from stderr warnings, we'll check the output instead
+            # Output should still be captured via 2>&1 redirection
+        } finally {
+            $ErrorActionPreference = $oldErrorAction
+        }
 
         if ($mutationOutput -match "Generated (\d+) mutations Killed (\d+)") {
             $total = [int]$Matches[1]
