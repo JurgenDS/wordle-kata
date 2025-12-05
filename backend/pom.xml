@@ -125,20 +125,8 @@
                 <version>3.2.5</version>
                 <configuration>
                     <!-- Merge JaCoCo agent with JVM arguments for warning suppression -->
-                    <argLine>
-                        ${surefire.jacoco.args}
-                        --add-opens java.base/java.lang=ALL-UNNAMED
-                        --add-opens java.base/java.util=ALL-UNNAMED
-                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED
-                        --add-opens java.base/java.text=ALL-UNNAMED
-                        --add-opens java.desktop/java.awt.font=ALL-UNNAMED
-                        --enable-native-access=ALL-UNNAMED
-                        -Djdk.attach.allowAttachSelf=true
-                        -XX:+EnableDynamicAgentLoading
-                        -Djdk.instrument.traceUsage=false
-                        -XX:+UnlockExperimentalVMOptions
-                        -XX:+UseEpsilonGC
-                    </argLine>
+                    <!-- Use @{} for late-binding property evaluation after JaCoCo sets it -->
+                    <argLine>@{surefire.jacoco.args} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED --enable-native-access=ALL-UNNAMED -Djdk.attach.allowAttachSelf=true -XX:+EnableDynamicAgentLoading -Djdk.instrument.traceUsage=false</argLine>
                     <systemPropertyVariables>
                         <!-- Suppress ArchUnit ClassFileProcessor warnings -->
                         <archunit.analyzeJdkClasses>false</archunit.analyzeJdkClasses>

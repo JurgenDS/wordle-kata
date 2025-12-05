@@ -5,6 +5,12 @@
         <Class name="com.example.hello.HelloWorldApplication"/>
     </Match>
 
+    <!-- Exclude WebConfig due to FindSecBugs CorsRegistryCORSDetector bug -->
+    <!-- NPE when analyzing dynamic CORS configuration with split() -->
+    <Match>
+        <Class name="com.example.hello.config.WebConfig"/>
+    </Match>
+
     <!-- Exclude generated code (MapStruct mappers) -->
     <Match>
         <Package name="~com\.example\.hello\..*"/>
